@@ -216,6 +216,8 @@ static BitBangedSPI SPI;
 
 #endif
 
+void avrisp(void);
+
 void setup() {
   SERIAL.begin(BAUDRATE);
 
@@ -477,6 +479,7 @@ unsigned int current_page() {
   return here;
 }
 
+uint8_t write_flash_pages(int length);
 
 void write_flash(int length) {
   fill(length);
@@ -507,6 +510,7 @@ uint8_t write_flash_pages(int length) {
   return STK_OK;
 }
 
+uint8_t write_eeprom_chunk(unsigned int start, unsigned int length);
 #define EECHUNK (32)
 uint8_t write_eeprom(unsigned int length) {
   // here is a word address, get the byte address
