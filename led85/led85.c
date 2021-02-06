@@ -21,6 +21,8 @@
 
 #define ledpin  PB1
 
+void delay(unsigned ms);
+
 int main(void)
 {
 	pin_mode(ledpin, OUTPUT);
@@ -28,10 +30,25 @@ int main(void)
 	for (;;)
 	{
 		pin_set(ledpin, HIGH);
-		delay_ms(20);
+		delay(20);
 		pin_set(ledpin, LOW);
-		delay_ms(1980);
+		delay(1980);
 	}
 
 	return 0;
+}
+
+void delay(unsigned ms)
+{
+	register unsigned t;
+	while ( ms > 0 )
+	{
+		t = (((unsigned long)HZ)*3)/16000;
+		while ( t > 0 )
+		{
+			__asm__ __volatile__ ("nop");
+			t--;
+		}
+		ms--;
+	}
 }

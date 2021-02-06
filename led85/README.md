@@ -2,6 +2,8 @@
 
 LED blink program on attiny85 bare metal - 20ms on, once every 2 seconds.
 
+The timing in this sketch is done using timing loops.
+
 No arduino libraries were harmed during the construction of this application. :-)
 
 ## License, disclaimer etc.
