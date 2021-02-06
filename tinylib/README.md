@@ -17,12 +17,12 @@ static inline void enable(void)
 ```
 u8_t disable(void)
 ```
-> Disables interrupts using the **cli*** instruction.
+> Disables interrupts using the **cli** instruction.<br/>
 > Returns the value of the status register **SREG** prior to disabling.
 ```
 u8_t restore(u8_t old)
 ```
-> Restores the interrupt flag to a previous state using either **sei** or **cli***.
+> Restores the interrupt flag to a previous state using either **sei** or **cli**.<br/>
 > Returns the value of the status register **SREG** prior to restoring.
 
 ### GPIO
