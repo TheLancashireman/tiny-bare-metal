@@ -45,21 +45,29 @@ extern void delay_ms(unsigned ms);
 extern u8_t disable(void);
 extern u8_t restore(u8_t old);
 
+/* pin_mode() - set the mode of a pin passed as a pin number
+*/
 static inline void pin_mode(u8_t pin, u8_t mode)
 {
 	pin_mode_m(0x1<<pin, mode);
 }
 
+/* pin_set() - set the state of a pin passed as a pin number
+*/
 static inline void pin_set(u8_t pin, u8_t hilo)
 {
 	pin_set_m(0x1<<pin, (hilo?(0x1<<pin):0x0));
 }
 
+/* pin_get() - get the state of a pin passed as a pin number
+*/
 static inline u8_t pin_get(u8_t pin)
 {
 	return (PINB & (0x1<<pin)) != 0x0;
 }
 
+/* enable() - enable interrupts
+*/
 static inline void enable(void)
 {
 	__asm__ __volatile__ ("sei");
