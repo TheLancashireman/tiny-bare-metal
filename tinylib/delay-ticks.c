@@ -21,12 +21,12 @@
 
 void delay_ticks(u32_t ticks)
 {
-	u64_t then;
-	u64_t now;
+	u32_t then;
+	u32_t now;
 
-	then = read_time();
+	then = read_time_32();
 
 	do {
-		now = read_time();
+		now = read_time_32();
 	} while ( (now - then) < ticks );
 }

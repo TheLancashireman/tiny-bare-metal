@@ -22,7 +22,8 @@
 
 /* High-order time bits.
 */
-volatile u64_t time_high;
+volatile u32_t time_high;
+volatile u32_t time_low;
 
 /* timing_init() - initialise the timing using Timer0
  *
@@ -46,5 +47,7 @@ void timing_init(void)
 
 ISR(TIM0_OVF_vect)
 {
-	time_high += 0x100;
+	if ( time_low >= 0xffffff00 )
+		time_high++;
+	time_low += 0x100;
 }

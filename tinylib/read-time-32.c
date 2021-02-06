@@ -1,4 +1,4 @@
-/* read-time.c - read_time()
+/* read-time-32.c - read_time_32()
  *
  * (c) David Haworth
  *
@@ -19,24 +19,19 @@
 */
 #include "tinylib.h"
 
-u64_t read_time(void)
+u32_t read_time_32(void)
 {
-	u32_t t1h;
-	u32_t t1l;
-	u32_t t2h;
-	u32_t t2l;
+	u32_t h1;
+	u32_t h2;
 	u8_t l;
 
-	t2h = time_high;
-	t2l = time_low;
+	h2 = time_low;
 
 	do {
-		t1h = t2h;
-		t1l = t2l;
+		h1 = h2;
 		l = TCNT0;
-		t2h = time_high;
-		t2l = time_low;
-	} while ( t1l != t2l );
+		h2 = time_low;
+	} while ( h1 != h2 );
 
-	return ((u64_t)t1h << 32) + t1l + l;
+	return h1 + l;
 }
