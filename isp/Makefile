@@ -1,4 +1,4 @@
-ARDUINO_BASE			= /data1/projects/arduino
+ARDUINO_BASE			= ../../arduino
 ARDUINO_DIR				= $(ARDUINO_BASE)/arduino-1.8.13
 TARGET					= ArduinoISP
 MCU						= atmega328p
