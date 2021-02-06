@@ -29,8 +29,6 @@ volatile u32_t time_low;
  *
  * Erases all output-compare and input-capture settings, so call this function
  * first, before initialising any PWM or pulse-width measurement functionality.
- *
- * Timer0 runs at a maximum of 1 MHz when used for timing.
 */
 void timing_init(void)
 {
@@ -45,6 +43,13 @@ void timing_init(void)
 	(void)restore(s);
 }
 
+/* Timer0 overflow interrupt
+ *
+ * Add timer duration (256) onto time_low.
+ * If time_low overflows, increment time_high
+ *
+ * ToDo: make time_high and read_time() optional based on a compile-time switch.
+*/
 ISR(TIM0_OVF_vect)
 {
 	if ( time_low >= 0xffffff00 )
