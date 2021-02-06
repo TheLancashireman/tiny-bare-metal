@@ -1,4 +1,4 @@
-/* pin-mode.c - pin_mode_m()
+/* diasable-restore.c - disable and re-enable interrupt handling
  *
  * (c) David Haworth
  *
@@ -19,12 +19,31 @@
 */
 #include "tinylib.h"
 
-/* pin_mode_m() - set the pin mode
+/* disable() - disable interrupts using the cli instruction
+ *
+ * Returns the previous state of the status register (SREG)
 */
-void pin_mode_m(u8_t bitmask, u8_t mode)
+u8_t disable(void)
 {
-	u8_t s = disable();
-	DDRB  = (DDRB & ~bitmask)  | ( (mode == OUTPUT) ? bitmask : 0 );
-	PORTB = (PORTB & ~bitmask) | ( (mode == PULLUP) ? bitmask : 0 );
-	(void)restore(s);
+	u8_t s = SREG;
+	__asm__ __volatile__ ("cli");
+	return s;
+}
+
+/* restore() - set the interrupt flag to a given state - usually the previous state returned by disable()
+ *
+ * Returns the state of the status register (SREG) prior to the restore
+*/
+u8_t restore(u8_t old)
+{
+	u8_t s = SREG;
+	if ( old & 0x80)
+	{
+		__asm__ __volatile__ ("sei");
+	}
+	else
+	{
+		__asm__ __volatile__ ("cli");
+	}
+	return s;
 }

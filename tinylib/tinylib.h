@@ -36,8 +36,8 @@ typedef unsigned long long u64_t;
 #define LOW			0
 #define HIGH		1
 #define OUTPUT		2
-#define PULLUP		3
-#define PULLDOWN	4
+#define INPUT		3
+#define PULLUP		4
 
 extern void pin_mode_m(u8_t bitmask, u8_t mode);
 extern void pin_set_m(u8_t bitmask, u8_t bitstate);
@@ -54,4 +54,15 @@ static inline void pin_set(u8_t pin, u8_t hilo)
 {
 	pin_set_m(0x1<<pin, (hilo?(0x1<<pin):0x0));
 }
+
+static inline u8_t pin_get(u8_t pin)
+{
+	return (PINB & (0x1<<pin)) != 0x0;
+}
+
+static inline void enable(void)
+{
+	__asm__ __volatile__ ("sei");
+}
+
 #endif
