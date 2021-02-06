@@ -1,12 +1,16 @@
-# Bare metal programming on the attiny
+# Bare metal programming on the attiny85
 
-This is a collection of bits for constructing attiny applications without the arduino environment.
+This is a collection of bits for constructing attiny85 applications without the arduino environment.
+They will probably work on the other attinyx5 chips too, and (with modification) on other AVR
+microcontrollers.
 
-The aim is for the memory footprint to be as small as absolutely possible, by letting the compiler
+The aim is for the memory footprint to be as small as possible, by letting the compiler
 and linker do a lot of the work.
 
 You need to install avr-gcc. On linux systems it might be just a matter of installing the gcc-avr package.
 If gcc-avr isn't in the package repository, the easiest way might be to download and install arduino.
+
+You'll also need an in-system programmer (see isp/) and avrdude.
 
 ## License, disclaimer etc.
 
