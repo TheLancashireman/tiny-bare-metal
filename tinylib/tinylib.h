@@ -52,11 +52,17 @@ typedef unsigned long long u64_t;
 #define INPUT		3
 #define PULLUP		4
 
+/* High-order time bits.
+*/
+volatile u64_t time_high;
+
 extern void pin_mode_m(u8_t bitmask, u8_t mode);
 extern void pin_set_m(u8_t bitmask, u8_t bitstate);
-extern void delay_ms(unsigned ms);
 extern u8_t disable(void);
 extern u8_t restore(u8_t old);
+extern void timing_init(void);
+extern u64_t read_time(void);
+extern void delay_ticks(u32_t ticks);
 
 /* pin_mode() - set the mode of a pin passed as a pin number
 */
@@ -84,6 +90,20 @@ static inline u8_t pin_get(u8_t pin)
 static inline void enable(void)
 {
 	__asm__ __volatile__ ("sei");
+}
+
+/* delay_ms() - delay for a number of milliseconds
+*/
+static inline void delay_ms(u16_t ms)
+{
+	delay_ticks(((u32_t)ms * 1000)/T0_RESOLUTION);
+}
+
+/* delay_us() - delay for a number of microseconds
+*/
+static inline void delay_us(u32_t us)
+{
+	delay_ticks((us + T0_RESOLUTION  - 1)/T0_RESOLUTION);
 }
 
 #endif

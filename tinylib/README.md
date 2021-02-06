@@ -43,15 +43,16 @@ u8_t pin_get(u8_t pin)
 ```
 void pin_mode_m(u8_t bitmask, u8_t mode);
 ```
-> Used by pin_mode()
+> Used by pin_mode().<br/>
 > Sets the mode (OUTPUT/INPUT/PULLUP) of the pin.<br/>
 > The pin is specified by mask (1 << pin_no)
 ```
 void pin_set_m(u8_t bitmask, u8_t bitstate);
-> Used by pin_set()
+```
+> Used by pin_set().<br/>
 > Sets the output state of the pin.<br/>
 > The pin is specified by mask (1 << pin_no). The state is either (1<<pin_no) or 0.
-```
+
 ### Timing
 
 Work in progress...
