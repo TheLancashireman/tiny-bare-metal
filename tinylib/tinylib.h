@@ -27,6 +27,19 @@
 #define HZ	16000000
 #endif
 
+#if HZ == 16000000
+#define T0_CLKSEL			0x03
+#define T0_RESOLUTION		4
+#elif HZ == 8000000
+#define T0_CLKSEL			0x03
+#define T0_RESOLUTION		8
+#elif HZ == 1000000
+#define T0_CLKSEL			0x02
+#define T0_RESOLUTION		8
+#else
+#error "Unsupported HZ value"
+#endif
+
 typedef unsigned char u8_t;
 typedef unsigned short u16_t;
 typedef unsigned long u32_t;
