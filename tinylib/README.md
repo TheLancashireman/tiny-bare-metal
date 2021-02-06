@@ -8,7 +8,6 @@ and linker do a lot of the work.
 ## Library functions
 
 ### Interrupt management
-
 ```
 static inline void enable(void)
 ```
@@ -26,15 +25,39 @@ u8_t restore(u8_t old)
 > Returns the value of the status register **SREG** prior to restoring.
 
 ### GPIO
-
+```
+void pin_mode(u8_t pin, u8_t mode)
+```
+> Sets the mode (OUTPUT/INPUT/PULLUP) of the pin.<br/>
+> The pin is specified by number (0..5 or PB0..PB5)
+```
+void pin_set(u8_t pin, u8_t hilo)
+```
+> Sets the output state of the pin.<br/>
+> The pin is specified by number (0..5 or PB0..PB5)
+```
+u8_t pin_get(u8_t pin)
+```
+> Gets the current state of the pin.<br/>
+> The pin is specified by number (0..5 or PB0..PB5)
+```
+void pin_mode_m(u8_t bitmask, u8_t mode);
+```
+> Used by pin_mode()
+> Sets the mode (OUTPUT/INPUT/PULLUP) of the pin.<br/>
+> The pin is specified by mask (1 << pin_no)
+```
+void pin_set_m(u8_t bitmask, u8_t bitstate);
+> Used by pin_set()
+> Sets the output state of the pin.<br/>
+> The pin is specified by mask (1 << pin_no). The state is either (1<<pin_no) or 0.
+```
 ### Timing
 
-extern void pin_mode_m(u8_t bitmask, u8_t mode);
-extern void pin_set_m(u8_t bitmask, u8_t bitstate);
-extern void delay_ms(unsigned ms);
-static inline void pin_mode(u8_t pin, u8_t mode)
-static inline void pin_set(u8_t pin, u8_t hilo)
-static inline u8_t pin_get(u8_t pin)
+Work in progress...
+```
+void delay_ms(unsigned ms)
+```
 
 ## License, disclaimer etc.
 
