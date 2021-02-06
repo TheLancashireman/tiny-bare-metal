@@ -19,6 +19,7 @@
 */
 #include "attiny.h"
 
+#if 0
 void pin_mode_m(u8_t bitmask, u8_t mode)
 {
 	u8_t s = disable();
@@ -33,6 +34,7 @@ void pin_set_m(u8_t bitmask, u8_t bitstate)
 	PORTB = (PORTB & ~bitmask) | bitstate;
 	(void)restore(s);
 }
+#endif
 
 void delay_ms(unsigned ms)
 {

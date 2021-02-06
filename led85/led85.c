@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "attiny.h"
+#include "tinylib.h"
 
 #define ledpin  PB1
 

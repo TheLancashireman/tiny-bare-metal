@@ -18,42 +18,51 @@
 # along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 
 
-BUILD		?= build
-ISPPORT		?= /dev/ttyUSB0
+BUILD		?=	build
+ISPPORT		?=	/dev/ttyUSB0
+OBJ_DIR		?=	$(BUILD)/o
+LIB_DIR		?=	$(BUILD)/a
+TLIB_DIR	?=	../tinylib
 
+GCC			=	avr-gcc
+GLD			=	avr-gcc
+GAR			=	avr-ar
+OBJCOPY		=	avr-objcopy
 
-OBJ_DIR		?= $(BUILD)/o
+CC_OPT		+=	-mmcu=attiny85
+CC_OPT		+=	-fdata-sections
+CC_OPT		+=	-ffunction-sections
+CC_OPT		+=	-Os
+CC_OPT		+=	-g
+CC_OPT		+=	-Wall
+CC_OPT		+=	-I $(TLIB_DIR)
 
-GCC			= avr-gcc
-GLD			= avr-gcc
-OBJCOPY		= avr-objcopy
+LD_OPT		+=	-mmcu=attiny85
+LD_OPT		+=	-Wl,--gc-sections
+LD_OPT		+=	-Os
+LD_OPT		+=	-L $(LIB_DIR)
 
-CC_OPT		+= -mmcu=attiny85
-CC_OPT		+= -fdata-sections
-CC_OPT		+= -ffunction-sections
-CC_OPT		+= -Os
-CC_OPT		+= -g
-CC_OPT		+= -Wall
+LD_LIB		+=	-ltiny
+LD_LIB		+=	-lm
 
-LD_OPT		+= -mmcu=attiny85
-LD_OPT		+= -Wl,--gc-sections
-LD_OPT		+= -Os
-LD_OPT		+= -lm
+OBJS		+=	$(OBJ_DIR)/led85.o
+OBJS		+=	$(OBJ_DIR)/attiny.o
 
-OBJS		+= $(OBJ_DIR)/led85.o
-OBJS		+= $(OBJ_DIR)/attiny.o
+VPATH		+=	$(TLIB_DIR)
 
-.PHONY:		default clean upload
+.PHONY:		default clean hex upload
 
 default:	$(BUILD)/led85.elf
 
 clean:
 	if [ -d $(BUILD) ] ; then rm -r $(BUILD); fi
 
+hex:		$(BUILD)/led85.ihex
+
 $(BUILD)/o:
 	mkdir -p $(BUILD)/o
 
-$(BUILD)/led85.elf:	$(OBJ_DIR) $(OBJS)
+$(BUILD)/led85.elf:	$(OBJ_DIR) $(OBJS) $(LIB_DIR)/libtiny.a
 	$(GLD) $(LD_OPT) -o $@ $(OBJS) $(LD_LIB)
 	
 
@@ -65,3 +74,5 @@ $(BUILD)/led85.ihex:	$(BUILD)/led85.elf
 
 upload:		$(BUILD)/led85.ihex
 	avrdude -P $(ISPPORT) -b 19200 -c avrisp -p t85 -U flash:w:build/led85.ihex:i
+
+include $(TLIB_DIR)/tinylib.make
