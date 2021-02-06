@@ -51,3 +51,7 @@ avrdude should now be able to read the signature and the fuse bytes.
 avrdude -P /dev/ttyUSBx -b 19200 -c avrisp -p t85 -U [....]
 
 t85 is for an attiny85. Type avrdude -p ? for a full list.
+
+## License
+
+BSD. See the source file and http://www.opensource.org/licenses/bsd-license.php for details.

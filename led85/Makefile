@@ -1,16 +1,32 @@
 # Makefile for led85 (tiny bare metal)
 
+# Copyright David Haworth
+# 
+# This file is part of tiny-bare-metal.
+# 
+# tiny-bare-metal is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# tiny-bare-metal is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
+
+
 BUILD		?= build
-GNU_D		?= /data1/projects/arduino/arduino-1.8.13/hardware/tools/avr
 ISPPORT		?= /dev/ttyUSB0
 
 
-GNU_BIN		?= $(GNU_D)/bin
 OBJ_DIR		?= $(BUILD)/o
 
-GCC			= $(GNU_BIN)/avr-gcc
-GLD			= $(GNU_BIN)/avr-gcc
-OBJCOPY		= $(GNU_BIN)/avr-objcopy
+GCC			= avr-gcc
+GLD			= avr-gcc
+OBJCOPY		= avr-objcopy
 
 CC_OPT		+= -mmcu=attiny85
 CC_OPT		+= -fdata-sections
@@ -19,9 +35,9 @@ CC_OPT		+= -Os
 CC_OPT		+= -g
 CC_OPT		+= -Wall
 
-LD_OPT		+= -Os
 LD_OPT		+= -mmcu=attiny85
 LD_OPT		+= -Wl,--gc-sections
+LD_OPT		+= -Os
 LD_OPT		+= -lm
 
 OBJS		+= $(OBJ_DIR)/led85.o
