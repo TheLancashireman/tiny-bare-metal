@@ -12,18 +12,18 @@ and linker do a lot of the work.
 ```
 static inline void enable(void)
 ```
-* Enables interrupts using the **sei** instruction.
+> Enables interrupts using the **sei** instruction.
 
 ```
 u8_t disable(void)
 ```
-* Disables interrupts using the **cli*** instruction.
-* Returns the value of the status register **SREG** prior to disabling.
+> Disables interrupts using the **cli*** instruction.
+> Returns the value of the status register **SREG** prior to disabling.
 ```
 u8_t restore(u8_t old)
 ```
-* Restores the interrupt flag to a previous state using either **sei** or **cli***.
-* Returns the value of the status register **SREG** prior to restoring.
+> Restores the interrupt flag to a previous state using either **sei** or **cli***.
+> Returns the value of the status register **SREG** prior to restoring.
 
 ### GPIO
 
