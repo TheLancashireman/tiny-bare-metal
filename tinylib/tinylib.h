@@ -54,8 +54,8 @@ typedef unsigned long long u64_t;
 
 /* High-order time bits.
 */
-volatile u32_t time_high;
-volatile u32_t time_low;
+extern volatile u32_t time_high;
+extern volatile u32_t time_low;
 
 extern void pin_mode_m(u8_t bitmask, u8_t mode);
 extern void pin_set_m(u8_t bitmask, u8_t bitstate);

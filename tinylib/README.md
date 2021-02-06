@@ -54,11 +54,43 @@ void pin_set_m(u8_t bitmask, u8_t bitstate);
 > The pin is specified by mask (1 << pin_no). The state is either (1<<pin_no) or 0.
 
 ### Timing
+The time-measurement API can measure time down to a resolution of T0_RESOLUTION microseconds -
+the exact resolution depends on the clock frequency.
 
-Work in progress...
+A 64-bit time is maintained, although for most purposes the 32-bit timing is sufficient.
+
 ```
-void delay_ms(unsigned ms)
+void timing_init(void)
 ```
+> Initialises Timer0 for use by the time-measurement features<br/>
+> Erases all timer settings --> call before setting up PWM<br/>
+```
+u64_t read_time(void)
+```
+> Returns a 64-bit timestamp with resolution T0_RESOLUTION microseconds<br/>
+> Times are monotonically increasing and will never overflow for all practical purposes<br/>
+> CAVEAT: Might return incorrect time if called with interrupts disabled
+```
+u32_t read_time_32(void)
+```
+> Returns a 32-bit timestamp with resolution T0_RESOLUTION microseconds<br/>
+> CAVEAT: Might return incorrect time if called with interrupts disabled
+```
+void delay_ticks(u32_t ticks)
+```
+> Delay for a specified number of ticks<br/>
+> A tick is T0_RESOLUTION microseconds<br/>
+> CAVEAT: Might delay forever if called with interrupts disabled
+```
+inline void delay_ms(u16_t ms)
+```
+> Delay for a specified number of milliseconds<br/>
+> CAVEAT: Might delay forever if called with interrupts disabled
+```
+inline void delay_us(u32_t us)
+```
+> Delay for a specified number of microseconds<br/>
+> CAVEAT: Might delay forever if called with interrupts disabled
 
 ## License, disclaimer etc.
 
