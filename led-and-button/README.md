@@ -1,9 +1,9 @@
 # led-and-button
 
 LED blink program on attiny85 bare metal - 20ms on, once every 2 seconds.
-If the button is pressed the blink mode changes.
+If the button is pressed the blink mode changes to 250 ms on / 250 ms off.
 
-The timing in this sketch is done using the tinylib timing on Timer0.
+The timing in this sketch uses the tinylib timing on Timer0.
 
 No arduino libraries were harmed during the construction of this application. :-)
 

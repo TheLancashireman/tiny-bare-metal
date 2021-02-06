@@ -20,19 +20,33 @@
 #include "tinylib.h"
 
 #define ledpin  PB1
+#define btnpin	PB0
 
 int main(void)
 {
 	timing_init();
 	pin_mode(ledpin, OUTPUT);
+	pin_mode(btnpin, PULLUP);
 	enable();
 
 	for (;;)
 	{
-		pin_set(ledpin, HIGH);
-		delay_ms(20);
-		pin_set(ledpin, LOW);
-		delay_ms(1980);
+		if ( pin_get(btnpin) )
+		{
+			// Pin is high --> button is not pressed
+			pin_set(ledpin, HIGH);
+			delay_ms(20);
+			pin_set(ledpin, LOW);
+			delay_ms(1980);
+		}
+		else
+		{
+			// Pin is low --> button is pressed
+			pin_set(ledpin, HIGH);
+			delay_ms(250);
+			pin_set(ledpin, LOW);
+			delay_ms(250);
+		}
 	}
 
 	return 0;
