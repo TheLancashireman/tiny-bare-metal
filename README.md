@@ -2,8 +2,11 @@
 
 This is a collection of bits for constructing attiny applications without the arduino environment.
 
+The aim is for the memory footprint to be as small as absolutely possible, by letting the compiler
+and linker do a lot of the work.
+
 You need to install avr-gcc. On linux systems it might be just a matter of installing the gcc-avr package.
-If it isn't available, the easiest way might be to download and install arduino.
+If gcc-avr isn't in the package repository, the easiest way might be to download and install arduino.
 
 ## License, disclaimer etc.
 
@@ -27,4 +30,3 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
-
