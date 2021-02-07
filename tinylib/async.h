@@ -1,4 +1,4 @@
-/* read-time.c - read_time()
+/* async.h - header file for tinylib's async serial functions
  *
  * (c) David Haworth
  *
@@ -17,28 +17,30 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef ASYNC_H
+#define ASYNC_H	1
+
 #include "tinylib.h"
 
-#if TIME64
-u64_t read_time(void)
+#if ASYNC_BITRATE != 0
+
+#if ASYNC_BITRATE == 9600
+#define BIT_TIME	(104/T0_RESOLUTION)
+#elif ASYNC_BITRATE == 4800
+#define BIT_TIME	(208/T0_RESOLUTION)
+#else
+#error "Unsipported bit rate"
+#endif
+
+static inline u8_t bit_delay(u8_t t0)
 {
-	u32_t t1h;
-	u32_t t1l;
-	u32_t t2h;
-	u32_t t2l;
-	u8_t l;
-
-	t2h = time_high;
-	t2l = time_low;
-
+	u8_t t;
 	do {
-		t1h = t2h;
-		t1l = t2l;
-		l = TCNT0;
-		t2h = time_high;
-		t2l = time_low;
-	} while ( t1l != t2l );
-
-	return ((u64_t)t1h << 32) + t1l + l;
+		t = TCNT0;
+	} while ( (t - t0) < BIT_TIME );
+	return t;
 }
+
+#endif
+
 #endif

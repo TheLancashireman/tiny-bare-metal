@@ -22,7 +22,9 @@
 
 /* High-order time bits.
 */
+#if TIME64
 volatile u32_t time_high;
+#endif
 volatile u32_t time_low;
 
 /* timing_init() - initialise the timing using Timer0
@@ -46,13 +48,13 @@ void timing_init(void)
 /* Timer0 overflow interrupt
  *
  * Add timer duration (256) onto time_low.
- * If time_low overflows, increment time_high
- *
- * ToDo: make time_high and read_time() optional based on a compile-time switch.
+ * If time_low overflows, increment time_high (only if TIME64 is enabled)
 */
 ISR(TIM0_OVF_vect)
 {
+#if TIME64
 	if ( time_low >= 0xffffff00 )
 		time_high++;
+#endif
 	time_low += 0x100;
 }

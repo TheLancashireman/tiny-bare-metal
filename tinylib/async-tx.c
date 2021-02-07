@@ -1,4 +1,4 @@
-/* read-time.c - read_time()
+/* async-tx.c - asynchronous serial transmit
  *
  * (c) David Haworth
  *
@@ -17,28 +17,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "tinylib.h"
+#include "async.h"
 
-#if TIME64
-u64_t read_time(void)
+#if ASYNC_BITRATE != 0
+
+#if ASYNC_TX_PIN >= PB0 && ASYNC_TX_PIN <= PB5
+
+void async_tx(u8_t ch)
 {
-	u32_t t1h;
-	u32_t t1l;
-	u32_t t2h;
-	u32_t t2l;
-	u8_t l;
+	u8_t t, i = 8;
+	t = TCNT0;
 
-	t2h = time_high;
-	t2l = time_low;
+	pin_set(ASYNC_TX_PIN, 0);					// Start bit
+	t = bit_delay(t);
 
-	do {
-		t1h = t2h;
-		t1l = t2l;
-		l = TCNT0;
-		t2h = time_high;
-		t2l = time_low;
-	} while ( t1l != t2l );
+	while ( i > 0 )
+	{
+		pin_set(ASYNC_TX_PIN,  ch & 0x01);		// Data bit
+		ch = ch >> 1;
+		i--;
+		t = bit_delay(t);
+	}
 
-	return ((u64_t)t1h << 32) + t1l + l;
+	pin_set(ASYNC_TX_PIN, 1);					// Stop bit
+	(void)bit_delay(t);
 }
+
+#endif
+
 #endif

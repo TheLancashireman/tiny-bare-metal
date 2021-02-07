@@ -27,17 +27,23 @@
 #define HZ	16000000
 #endif
 
+// Timer0 clock and resolution
 #if HZ == 16000000
-#define T0_CLKSEL			0x03
-#define T0_RESOLUTION		4
+#define T0_CLKSEL			0x03	// Prescaler 64 --> 250 kHz
+#define T0_RESOLUTION		4		// One tick = 4 us
 #elif HZ == 8000000
-#define T0_CLKSEL			0x03
-#define T0_RESOLUTION		8
+#define T0_CLKSEL			0x03	// Prescaler 64 --> 125 kHz
+#define T0_RESOLUTION		8		// One tick = 8 us
 #elif HZ == 1000000
-#define T0_CLKSEL			0x02
-#define T0_RESOLUTION		8
+#define T0_CLKSEL			0x02	// Prescaler 8 --> 125 kHz
+#define T0_RESOLUTION		8		// One tick = 8 us
 #else
 #error "Unsupported HZ value"
+#endif
+
+// 64-bit time only if required.
+#ifndef TIME64
+#define TIME64	0
 #endif
 
 typedef unsigned char u8_t;
@@ -54,7 +60,9 @@ typedef unsigned long long u64_t;
 
 /* High-order time bits.
 */
+#if TIME64
 extern volatile u32_t time_high;
+#endif
 extern volatile u32_t time_low;
 
 extern void pin_mode_m(u8_t bitmask, u8_t mode);
@@ -62,9 +70,16 @@ extern void pin_set_m(u8_t bitmask, u8_t bitstate);
 extern u8_t disable(void);
 extern u8_t restore(u8_t old);
 extern void timing_init(void);
-extern u64_t read_time(void);
 extern u32_t read_time_32(void);
 extern void delay_ticks(u32_t ticks);
+
+#if TIME64
+extern u64_t read_time(void);
+#endif
+
+#if ASYNC_BITRATE > 0
+extern void async_tx(u8_t ch);
+#endif
 
 /* pin_mode() - set the mode of a pin passed as a pin number
 */
