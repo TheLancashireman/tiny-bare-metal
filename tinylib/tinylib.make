@@ -33,6 +33,7 @@ TINYL_OBJS	+=	$(OBJ_DIR)/read-time.o
 TINYL_OBJS	+=	$(OBJ_DIR)/read-time-32.o
 TINYL_OBJS	+=	$(OBJ_DIR)/delay-ticks.o
 TINYL_OBJS	+=	$(OBJ_DIR)/async-tx.o
+TINYL_OBJS	+=	$(OBJ_DIR)/reverse-bits.o
 
 $(LIB_DIR)/libtiny.a:	$(LIB_DIR) $(TINYL_OBJS)
 	if [ -e $@ ] ; then rm $@; fi

@@ -46,6 +46,11 @@
 #define TIME64	0
 #endif
 
+// Async serial only if required
+#ifndef ASYNC_BITRATE
+#define ASYNC_BITRATE	0
+#endif
+
 typedef unsigned char u8_t;
 typedef unsigned short u16_t;
 typedef unsigned long u32_t;
@@ -72,6 +77,7 @@ extern u8_t restore(u8_t old);
 extern void timing_init(void);
 extern u32_t read_time_32(void);
 extern void delay_ticks(u32_t ticks);
+extern u8_t reverse_bits(u8_t b);
 
 #if TIME64
 extern u64_t read_time(void);
@@ -122,5 +128,17 @@ static inline void delay_us(u32_t us)
 {
 	delay_ticks((us + T0_RESOLUTION  - 1)/T0_RESOLUTION);
 }
+
+#if ASYNC_BITRATE > 0
+static inline void async_init(void)
+{
+#if ASYNC_TX_PIN >= PB0 && ASYNC_TX_PIN <= PB5
+	pin_mode(ASYNC_TX_PIN, OUTPUT);
+#endif
+#if ASYNC_RX_PIN >= PB0 && ASYNC_RX_PIN <= PB5
+	pin_mode(ASYNC_RX_PIN, INPUT);
+#endif
+}
+#endif
 
 #endif
