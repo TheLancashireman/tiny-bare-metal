@@ -29,17 +29,10 @@
 #elif ASYNC_BITRATE == 4800
 #define BIT_TIME	(208/T0_RESOLUTION)
 #else
-#error "Unsipported bit rate"
+#error "Unsupported bit rate"
 #endif
 
-static inline u8_t bit_delay(u8_t t0)
-{
-	u8_t t;
-	do {
-		t = TCNT0;
-	} while ( (t - t0) < BIT_TIME );
-	return t;
-}
+extern u8_t bit_delay(u8_t t0);
 
 #endif
 

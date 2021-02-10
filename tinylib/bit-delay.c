@@ -1,4 +1,4 @@
-/* reverse-bits.c - reverse the bits in a byte
+/* bit-delay.c - delay for one bit of serial data
  *
  * (c) David Haworth
  *
@@ -17,33 +17,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "tinylib.h"
+#include "async.h"
 
-const u8_t __attribute__((__progmem__)) rev4[16] =
-{	0x0,	// 0x0
-	0x8,	// 0x1
-	0x4,	// 0x2
-	0xc,	// 0x3
-	0x2,	// 0x4
-	0xa,	// 0x5
-	0x6,	// 0x6
-	0xe,	// 0x7
-	0x1,	// 0x8
-	0x9,	// 0x9
-	0x5,	// 0xa
-	0xd,	// 0xb
-	0x3,	// 0xc
-	0xb,	// 0xd
-	0x7,	// 0xe
-	0xf		// 0xf
-};
-
-/* reverse_bits() - reverse the bits in a byte
+/* bit_delay() - delay for one bit time
  *
- * The attiny's USI sends bits in the order MSB-first, but asynchronous serial communication
- * is LSB-first.
+ * To avoid accumulating errors caused by the computation time of a bit,
+ * the delay is measured from the end of the previous bit time.
+ *
+ * Example:
+ *	t = bit_delay(TCNT0);
+ *	<output 1st bit>
+ *	t = bit_delay(t);
+ *	<output 2nd bit>
+ *	t = bit_delay(t);
+ *	... and so on
 */
-u8_t reverse_bits(u8_t b)
+u8_t bit_delay(u8_t t0)
 {
-	return (rev4[b & 0xf] << 4) | rev4[b >> 4];
+	u8_t t;
+	do {
+		t = TCNT0;
+	} while ( ((u8_t)(t - t0)) < BIT_TIME );
+	return t;
 }

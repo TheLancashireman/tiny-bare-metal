@@ -50,6 +50,12 @@
 #ifndef ASYNC_BITRATE
 #define ASYNC_BITRATE	0
 #endif
+#ifndef ASYNC_TX_PIN
+#define ASYNC_TX_PIN	-1
+#endif
+#ifndef ASYNC_RX_PIN
+#define ASYNC_RX_PIN	-1
+#endif
 
 typedef unsigned char u8_t;
 typedef unsigned short u16_t;
@@ -78,6 +84,9 @@ extern void timing_init(void);
 extern u32_t read_time_32(void);
 extern void delay_ticks(u32_t ticks);
 extern u8_t reverse_bits(u8_t b);
+extern void putc(char c);
+extern int puts(const char s[]);
+extern int puts_P(const char s[]);
 
 #if TIME64
 extern u64_t read_time(void);
@@ -85,6 +94,9 @@ extern u64_t read_time(void);
 
 #if ASYNC_BITRATE > 0
 extern void async_tx(u8_t ch);
+#define TXCHAR(c)	async_tx((u8_t)c)
+//extern void blubb(u8_t ch);
+//#define TXCHAR(c)	blubb((u8_t)c)
 #endif
 
 /* pin_mode() - set the mode of a pin passed as a pin number
@@ -134,6 +146,7 @@ static inline void async_init(void)
 {
 #if ASYNC_TX_PIN >= PB0 && ASYNC_TX_PIN <= PB5
 	pin_mode(ASYNC_TX_PIN, OUTPUT);
+	pin_set(ASYNC_TX_PIN, 1);
 #endif
 #if ASYNC_RX_PIN >= PB0 && ASYNC_RX_PIN <= PB5
 	pin_mode(ASYNC_RX_PIN, INPUT);
