@@ -92,6 +92,47 @@ inline void delay_us(u32_t us)
 > Delay for a specified number of microseconds<br/>
 > CAVEAT: Might delay forever if called with interrupts disabled
 
+### Stdio
+```
+void async_tx(u8_t ch)
+```
+> Transmit a single byte by bit-banging on an output pin selected by ASYNC_TX_PIN.
+> Define ASYNC_TX_PIN on the compiler command line - e.g. -DASYNC_TX_PIN=PB2
+> async_tx() is used by putc()
+```
+u8_t bit_delay(u8_t t0)
+```
+> Delay one bit time starting from t0.
+> Returns end time of the delay.
+> Define ASYNC_BITRATE on the compiler command line to select the bit rate. Supported: 9600 and 4800.
+```
+inline void async_init(void)
+```
+> Initialise the bit-banged serial I/O pins.
+```
+void putc(char c)
+```
+> Transmit a single character using the uart. If the character is '\n', precede it with '\r'
+```
+int puts(const char s[])
+```
+> Transmit a normal character string via the uart.
+> Returns the number of characters, excluding '\r' padding for '\n'.
+```
+int puts_P(const char s[])
+```
+> Transmit a progmem character string via the uart.
+> Returns the number of characters, excluding '\r' padding for '\n'.
+```
+int printf(const char *fmt, ...)
+```
+> A stripped-down version of the stdio printf() using the uart.
+> The format string *must* be a progmem string.
+> Supported formats: c, s, d, u, x, X. Supported field modifiers: -, 0, *, ., l.
+> Strings for the 's' format must be normal strings, not progmem.
+> CAVEAT: printf uses about 1100 bytes of flash.
+
+
 ## License, disclaimer etc.
 
 Copyright David Haworth
