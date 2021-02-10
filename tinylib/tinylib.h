@@ -87,6 +87,7 @@ extern u8_t reverse_bits(u8_t b);
 extern void putc(char c);
 extern int puts(const char s[]);
 extern int puts_P(const char s[]);
+extern int printf(const char *fmt, ...);
 
 #if TIME64
 extern u64_t read_time(void);
