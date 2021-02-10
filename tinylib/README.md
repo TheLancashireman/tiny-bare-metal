@@ -102,8 +102,8 @@ void async_tx(u8_t ch)
 ```
 u8_t bit_delay(u8_t t0)
 ```
-> Delay one bit time starting from t0.
-> Returns end time of the delay.
+> Delay one bit time starting from t0.<br/>
+> Returns end time of the delay.<br/>
 > Define ASYNC_BITRATE on the compiler command line to select the bit rate. Supported: 9600 and 4800.
 ```
 inline void async_init(void)
@@ -116,20 +116,20 @@ void putc(char c)
 ```
 int puts(const char s[])
 ```
-> Transmit a normal character string via the uart.
+> Transmit a normal character string via the uart.<br/>
 > Returns the number of characters, excluding '\r' padding for '\n'.
 ```
 int puts_P(const char s[])
 ```
-> Transmit a progmem character string via the uart.
+> Transmit a progmem character string via the uart.<br/>
 > Returns the number of characters, excluding '\r' padding for '\n'.
 ```
 int printf(const char *fmt, ...)
 ```
-> A stripped-down version of the stdio printf() using the uart.
-> The format string *must* be a progmem string.
-> Supported formats: c, s, d, u, x, X. Supported field modifiers: -, 0, *, ., l.
-> Strings for the 's' format must be normal strings, not progmem.
+> A stripped-down version of the stdio printf() using the uart.<br/>
+> The format string *must* be a progmem string.<br/>
+> Supported formats: c, s, d, u, x, X. Supported field modifiers: -, 0, *, ., l.<br/>
+> Strings for the 's' format must be normal strings, not progmem.<br/>
 > CAVEAT: printf uses about 1100 bytes of flash.
 
 
