@@ -1,4 +1,4 @@
-/* led85.c - led blinking application
+/* led-button-serial.c - led blinking application with pushbutton control and simple serial transmit
  *
  * (c) David Haworth
  *
@@ -74,8 +74,4 @@ int main(void)
 	}
 
 	return 0;
-}
-
-void blubb(u8_t b)
-{
 }

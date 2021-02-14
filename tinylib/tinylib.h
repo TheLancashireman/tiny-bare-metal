@@ -96,8 +96,6 @@ extern u64_t read_time(void);
 #if ASYNC_BITRATE > 0
 extern void async_tx(u8_t ch);
 #define TXCHAR(c)	async_tx((u8_t)c)
-//extern void blubb(u8_t ch);
-//#define TXCHAR(c)	blubb((u8_t)c)
 #endif
 
 /* pin_mode() - set the mode of a pin passed as a pin number

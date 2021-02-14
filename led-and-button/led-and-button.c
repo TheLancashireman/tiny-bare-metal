@@ -1,4 +1,4 @@
-/* led85.c - led blinking application
+/* led-and-button.c - led blinking application with pushbutton control
  *
  * (c) David Haworth
  *

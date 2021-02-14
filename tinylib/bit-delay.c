@@ -19,6 +19,8 @@
 */
 #include "async.h"
 
+#ifdef BIT_TIME
+
 /* bit_delay() - delay for one bit time
  *
  * To avoid accumulating errors caused by the computation time of a bit,
@@ -40,3 +42,5 @@ u8_t bit_delay(u8_t t0)
 	} while ( ((u8_t)(t - t0)) < BIT_TIME );
 	return t;
 }
+
+#endif

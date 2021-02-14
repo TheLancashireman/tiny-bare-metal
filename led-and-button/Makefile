@@ -30,8 +30,7 @@ GAR			=	avr-ar
 OBJCOPY		=	avr-objcopy
 
 CC_OPT		+=	-mmcu=attiny85
-#CC_OPT		+=	-fdata-sections
-#CC_OPT		+=	-ffunction-sections
+CC_OPT		+=	-fno-builtin
 CC_OPT		+=	-Os
 CC_OPT		+=	-g
 CC_OPT		+=	-Wall

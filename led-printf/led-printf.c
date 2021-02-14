@@ -1,4 +1,4 @@
-/* led85.c - led blinking application
+/* led-printf.c - led blinking/button application - printf() example
  *
  * (c) David Haworth
  *
@@ -23,17 +23,7 @@
 #define ledpin  PB1
 #define btnpin	PB0
 
-#if ledpin != 1
-#error "ledpin != 1"
-#endif
-#if btnpin != 0
-#error "btnpin != 0"
-#endif
-#if ASYNC_TX_PIN != 3
-#error "ASYNC_TX_PIN != 2"
-#endif
-
-u8_t btnstate = 0;
+u8_t btnstate;
 
 int main(void)
 {
@@ -88,8 +78,4 @@ int main(void)
 	}
 
 	return 0;
-}
-
-void blubb(u8_t b)
-{
 }
