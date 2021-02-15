@@ -18,7 +18,7 @@
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <tinylib.h>
-#include <async.h>
+#include <tinyio.h>
 #include <avr/pgmspace.h>
 
 #include <string.h>

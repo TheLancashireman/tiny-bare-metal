@@ -1,4 +1,4 @@
-/* putc.c - putc()
+/* puts.s - puts()
  *
  * (c) David Haworth
  *
@@ -17,23 +17,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "tinylib.h"
+#include "tinyio.h"
 
-#ifdef TXCHAR
-
-/* putc() - transmit a character over the selected serial port.
+/* puts() - transmit a character string over the selected serial port.
  *
- * Automatically add a CR before LF.
+ * Uses putc() for each character
 */
-void putc(char ch)
+int puts(const char s[])
 {
-	if ( ch == '\n' )
+	int i = 0;
+	while ( s[i] != '\0' )
 	{
-		TXCHAR(0x0d);
-		TXCHAR(0x0a);
+		putc(s[i]);
+		i++;
 	}
-	else
-		TXCHAR(ch);
+	return i;
 }
-
-#endif

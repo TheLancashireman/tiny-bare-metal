@@ -1,4 +1,4 @@
-/* bit-delay.c - delay for one bit of serial data
+/* async-tx.c - asynchronous serial transmit
  *
  * (c) David Haworth
  *
@@ -17,30 +17,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "async.h"
+#include "tinyio.h"
 
-#ifdef BIT_TIME
+#if ASYNC_BITRATE != 0
 
-/* bit_delay() - delay for one bit time
- *
- * To avoid accumulating errors caused by the computation time of a bit,
- * the delay is measured from the end of the previous bit time.
- *
- * Example:
- *	t = bit_delay(TCNT0);
- *	<output 1st bit>
- *	t = bit_delay(t);
- *	<output 2nd bit>
- *	t = bit_delay(t);
- *	... and so on
-*/
-u8_t bit_delay(u8_t t0)
+#if ASYNC_TX_PIN >= PB0 && ASYNC_TX_PIN <= PB5
+
+void async_tx(u8_t ch)
 {
-	u8_t t;
-	do {
-		t = TCNT0;
-	} while ( ((u8_t)(t - t0)) < BIT_TIME );
-	return t;
+	u8_t t, i = 8;
+	t = TCNT0;
+
+	pin_set(ASYNC_TX_PIN, 0);					// Start bit
+	t = bit_delay(t);
+
+	while ( i > 0 )
+	{
+		pin_set(ASYNC_TX_PIN,  ch & 0x01);		// Data bit
+		ch = ch >> 1;
+		i--;
+		t = bit_delay(t);
+	}
+
+	pin_set(ASYNC_TX_PIN, 1);					// Stop bit
+	(void)bit_delay(t);
 }
+
+#endif
 
 #endif

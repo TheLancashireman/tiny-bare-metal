@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "tinylib.h"
+#include "tinyio.h"
 #include <avr/pgmspace.h>
 
 /* puts_P() - transmit a character string from progmem over the selected serial port.

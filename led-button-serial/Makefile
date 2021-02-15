@@ -23,6 +23,7 @@ ISPPORT		?=	/dev/ttyUSB0
 OBJ_DIR		?=	$(BUILD)/o
 LIB_DIR		?=	$(BUILD)/a
 TLIB_DIR	?=	../tinylib
+TIO_DIR		?=	../tinyio
 
 GCC			=	avr-gcc
 GLD			=	avr-gcc
@@ -31,12 +32,11 @@ OBJCOPY		=	avr-objcopy
 
 CC_OPT		+=	-mmcu=attiny85
 CC_OPT		+=	-fno-builtin
-#CC_OPT		+=	-fdata-sections
-#CC_OPT		+=	-ffunction-sections
 CC_OPT		+=	-Os
 CC_OPT		+=	-g
 CC_OPT		+=	-Wall
 CC_OPT		+=	-I $(TLIB_DIR)
+CC_OPT		+=	-I $(TIO_DIR)
 CC_OPT		+=	-D ASYNC_BITRATE=9600
 CC_OPT		+=	-D ASYNC_TX_PIN=PB3
 
@@ -51,6 +51,7 @@ LD_LIB		+=	-lm
 OBJS		+=	$(OBJ_DIR)/led-button-serial.o
 
 VPATH		+=	$(TLIB_DIR)
+VPATH		+=	$(TIO_DIR)
 
 .PHONY:		default clean hex upload
 
@@ -77,4 +78,5 @@ $(BUILD)/led-button-serial.ihex:	$(BUILD)/led-button-serial.elf
 upload:		$(BUILD)/led-button-serial.ihex
 	avrdude -P $(ISPPORT) -b 19200 -c avrisp -p t85 -U flash:w:build/led-button-serial.ihex:i
 
+include $(TIO_DIR)/tinyio.make
 include $(TLIB_DIR)/tinylib.make

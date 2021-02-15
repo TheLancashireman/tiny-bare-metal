@@ -23,6 +23,7 @@ ISPPORT		?=	/dev/ttyUSB0
 OBJ_DIR		?=	$(BUILD)/o
 LIB_DIR		?=	$(BUILD)/a
 TLIB_DIR	?=	../tinylib
+TIO_DIR		?=	../tinyio
 
 GCC			=	avr-gcc
 GLD			=	avr-gcc
@@ -37,6 +38,7 @@ CC_OPT		+=	-Os
 CC_OPT		+=	-g
 CC_OPT		+=	-Wall
 CC_OPT		+=	-I $(TLIB_DIR)
+CC_OPT		+=	-I $(TIO_DIR)
 CC_OPT		+=	-D ASYNC_BITRATE=9600
 CC_OPT		+=	-D ASYNC_TX_PIN=PB3
 
@@ -51,6 +53,7 @@ LD_LIB		+=	-lm
 OBJS		+=	$(OBJ_DIR)/led-printf.o
 
 VPATH		+=	$(TLIB_DIR)
+VPATH		+=	$(TIO_DIR)
 
 .PHONY:		default clean hex upload
 
@@ -77,4 +80,5 @@ $(BUILD)/led-printf.ihex:	$(BUILD)/led-printf.elf
 upload:		$(BUILD)/led-printf.ihex
 	avrdude -P $(ISPPORT) -b 19200 -c avrisp -p t85 -U flash:w:build/led-printf.ihex:i
 
+include $(TIO_DIR)/tinyio.make
 include $(TLIB_DIR)/tinylib.make

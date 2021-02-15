@@ -1,4 +1,4 @@
-/* async-tx.c - asynchronous serial transmit
+/* putc.c - putc()
  *
  * (c) David Haworth
  *
@@ -17,32 +17,23 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "async.h"
+#include "tinyio.h"
 
-#if ASYNC_BITRATE != 0
+#ifdef TXCHAR
 
-#if ASYNC_TX_PIN >= PB0 && ASYNC_TX_PIN <= PB5
-
-void async_tx(u8_t ch)
+/* putc() - transmit a character over the selected serial port.
+ *
+ * Automatically add a CR before LF.
+*/
+void putc(char ch)
 {
-	u8_t t, i = 8;
-	t = TCNT0;
-
-	pin_set(ASYNC_TX_PIN, 0);					// Start bit
-	t = bit_delay(t);
-
-	while ( i > 0 )
+	if ( ch == '\n' )
 	{
-		pin_set(ASYNC_TX_PIN,  ch & 0x01);		// Data bit
-		ch = ch >> 1;
-		i--;
-		t = bit_delay(t);
+		TXCHAR(0x0d);
+		TXCHAR(0x0a);
 	}
-
-	pin_set(ASYNC_TX_PIN, 1);					// Stop bit
-	(void)bit_delay(t);
+	else
+		TXCHAR(ch);
 }
-
-#endif
 
 #endif

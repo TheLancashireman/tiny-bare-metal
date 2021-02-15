@@ -1,4 +1,4 @@
-/* puts.s - puts()
+/* bit-delay.c - delay for one bit of serial data
  *
  * (c) David Haworth
  *
@@ -17,19 +17,30 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "tinylib.h"
+#include "tinyio.h"
 
-/* puts() - transmit a character string over the selected serial port.
+#ifdef BIT_TIME
+
+/* bit_delay() - delay for one bit time
  *
- * Uses putc() for each character
+ * To avoid accumulating errors caused by the computation time of a bit,
+ * the delay is measured from the end of the previous bit time.
+ *
+ * Example:
+ *	t = bit_delay(TCNT0);
+ *	<output 1st bit>
+ *	t = bit_delay(t);
+ *	<output 2nd bit>
+ *	t = bit_delay(t);
+ *	... and so on
 */
-int puts(const char s[])
+u8_t bit_delay(u8_t t0)
 {
-	int i = 0;
-	while ( s[i] != '\0' )
-	{
-		putc(s[i]);
-		i++;
-	}
-	return i;
+	u8_t t;
+	do {
+		t = TCNT0;
+	} while ( ((u8_t)(t - t0)) < BIT_TIME );
+	return t;
 }
+
+#endif

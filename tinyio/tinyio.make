@@ -1,4 +1,4 @@
-# Makefile fragment for tinylib
+# Makefile fragment for tinyio
 
 # Copyright David Haworth
 # 
@@ -20,23 +20,11 @@
 # Include this makefile fragment into your project makefile to build tinylib
 
 # Prerequisites:
-#	OBJ_DIR		- the directory to put the object files
-#	LIB_DIR		- the directory to put the library
-#	GAR			- the name of the GNU archiver program (including full path if necessary)
-#				- a rule to compile a .c file to a .o file
+#		- see tinylib.make. This makefile adds files to tinylib.a
 
-TINYL_OBJS	+=	$(OBJ_DIR)/pin-mode.o
-TINYL_OBJS	+=	$(OBJ_DIR)/pin-set.o
-TINYL_OBJS	+=	$(OBJ_DIR)/disable-restore.o
-TINYL_OBJS	+=	$(OBJ_DIR)/timing.o
-TINYL_OBJS	+=	$(OBJ_DIR)/read-time.o
-TINYL_OBJS	+=	$(OBJ_DIR)/read-time-32.o
-TINYL_OBJS	+=	$(OBJ_DIR)/delay-ticks.o
-TINYL_OBJS	+=	$(OBJ_DIR)/reverse-bits.o
-
-$(LIB_DIR)/libtiny.a:	$(LIB_DIR) $(TINYL_OBJS)
-	if [ -e $@ ] ; then rm $@; fi
-	$(GAR) crus $@ $(TINYL_OBJS)
-
-$(LIB_DIR):
-	mkdir -p $@
+TINYL_OBJS	+=	$(OBJ_DIR)/async-tx.o
+TINYL_OBJS	+=	$(OBJ_DIR)/bit-delay.o
+TINYL_OBJS	+=	$(OBJ_DIR)/putc.o
+TINYL_OBJS	+=	$(OBJ_DIR)/puts.o
+TINYL_OBJS	+=	$(OBJ_DIR)/puts-p.o
+TINYL_OBJS	+=	$(OBJ_DIR)/printf.o

@@ -1,4 +1,4 @@
-/* async.h - header file for tinylib's async serial functions
+/* tinyio.h - header file for tinyio
  *
  * (c) David Haworth
  *
@@ -17,12 +17,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tiny-bare-metal.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef ASYNC_H
-#define ASYNC_H	1
+#ifndef TINYIO_H
+#define TINYIO_H	1
 
 #include "tinylib.h"
+#include <avr/io.h>
 
-#if ASYNC_BITRATE != 0
+// Async serial only if required
+#ifndef ASYNC_BITRATE
+#define ASYNC_BITRATE	0
+#endif
+#ifndef ASYNC_TX_PIN
+#define ASYNC_TX_PIN	-1
+#endif
+#ifndef ASYNC_RX_PIN
+#define ASYNC_RX_PIN	-1
+#endif
+
+#if ASYNC_BITRATE > 0
 
 #if ASYNC_BITRATE == 9600
 #define BIT_TIME	(104/T0_RESOLUTION)
@@ -32,7 +44,25 @@
 #error "Unsupported bit rate"
 #endif
 
+extern void putc(char c);
+extern int puts(const char s[]);
+extern int puts_P(const char s[]);
+extern int printf(const char *fmt, ...);
+extern void async_tx(u8_t ch);
 extern u8_t bit_delay(u8_t t0);
+
+#define TXCHAR(c)	async_tx((u8_t)c)
+
+static inline void async_init(void)
+{
+#if ASYNC_TX_PIN >= PB0 && ASYNC_TX_PIN <= PB5
+	pin_mode(ASYNC_TX_PIN, OUTPUT);
+	pin_set(ASYNC_TX_PIN, 1);
+#endif
+#if ASYNC_RX_PIN >= PB0 && ASYNC_RX_PIN <= PB5
+	pin_mode(ASYNC_RX_PIN, INPUT);
+#endif
+}
 
 #endif
 
