@@ -19,9 +19,14 @@
 */
 #include "tinylib.h"
 #include "tinyir.h"
+#include "tinyio.h"
 #include <avr/interrupt.h>
 
 #ifdef IR_RX_PIN
+
+#if IR_RX_PIN != 0
+#error "Wrong pin"
+#endif
 
 struct ir_s ir;
 
@@ -54,8 +59,8 @@ void ir_init(void)
 {
 	u8_t is = disable();
 	pin_mode(IR_RX_PIN, PULLUP);
-	GIMSK |= PCIE;
-	PCMSK |= 0x1 << IR_RX_PIN;
+	PCMSK |= (0x1 << IR_RX_PIN);
+	GIMSK |= (0x1 << PCIE);
 	(void)restore(is);
 }
 

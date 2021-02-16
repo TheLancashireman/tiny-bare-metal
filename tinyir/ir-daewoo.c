@@ -19,6 +19,10 @@
 */
 #include "tinylib.h"
 #include "tinyir.h"
+#include "tinyio.h"
+
+//#define DBGC(x)	bputc(x)
+#define DBGC(x)		do { } while (0)
 
 /*	Data stream for Daewoo VCR handset
  *   
@@ -45,10 +49,10 @@
 #define MAX_SOF		IR_MS(9000)
 #define MIN_SOB		IR_MS(3000)
 #define MAX_SOB		IR_MS(5000)
-#define MIN_TIM		IR_MS(500)
+#define MIN_TIM		IR_MS(100)
 #define MAX_TIM		IR_MS(1500)
-#define MIN_BIT		IR_MS(500)
-#define MIN_ONE		IR_MS(1500)
+#define MIN_BIT		IR_MS(100)
+#define MIN_ONE		IR_MS(1200)
 #define MAX_BIT		IR_MS(2500)
 
 void ir_decode_daewoo(u32_t time_now, u8_t pin_now)
@@ -57,6 +61,13 @@ void ir_decode_daewoo(u32_t time_now, u8_t pin_now)
 		return;					// No change; spurious interrupt (or different pin changed)
 
 	u32_t pwidth = time_now - ir.time;
+
+	if ( pwidth >= 0xffffff00 )
+	{
+		// Timer overflow; but high order bits not updated yet.
+		pwidth += 0x100;
+		time_now += 0x100;
+	}
 
 	ir.pinstate = pin_now;
 	ir.time = time_now;
@@ -73,11 +84,13 @@ void ir_decode_daewoo(u32_t time_now, u8_t pin_now)
 				ir.state = IR_SOB;
 				ir.shiftreg = 0;
 				ir.bit = 0;
+				DBGC('1');
 			}
 			else
 			{
 				// SOF out of spec - go back to idle
 				ir.state = IR_IDLE;
+				DBGC('2');
 			}
 		}
 		else if ( ir.state == IR_TIM )
@@ -85,39 +98,47 @@ void ir_decode_daewoo(u32_t time_now, u8_t pin_now)
 			// End of timing pulse between bits
 			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
 			{
-				if ( ir.bit == 8 )
+				ir.bit++;
+
+				if ( ir.bit == 9 )
 				{
-					// After the timing pulse after bit 8, another start-of-byte pulse is expected
+					// After the timing pulse no. 9, another start-of-byte pulse is expected
 					ir.state = IR_SOB;
+					DBGC('3');
 				}
-				else if ( ir.bit < 16 )
+				else if ( ir.bit < 18 )
 				{
 					// After other timing pulses a data bit is expected
 					ir.state = IR_BIT;
+					DBGC('4');
 				}
-				else if ( ir.bit == 16 )
+				else if ( ir.bit == 18 )
 				{
-					// 16 bits received; move to holding store and set new data flag
+					// Exactly 18 timing pulses received; move to holding store and set new data flag
 					ir.data = ir.shiftreg;
 					ir.newdata = 1;
 					ir.state = IR_IDLE;
+					DBGC('5');
 				}
 				else
 				{
 					// Too many timing pulses. Should never get here.
 					ir.state = IR_IDLE;
+					DBGC('6');
 				}
 			}
 			else
 			{
 				// Timing pulse out of spec - go back to idle
 				ir.state = IR_IDLE;
+				DBGC('7');
 			}
 		}
 		else
 		{
 			// Wrong state; return to idle
 			ir.state = IR_IDLE;
+			DBGC('8');
 		}
 	}
 	else
@@ -127,6 +148,7 @@ void ir_decode_daewoo(u32_t time_now, u8_t pin_now)
 		{
 			// Idle state has indeterminate length - cannot measure because timer might have overflowed.
 			ir.state = IR_SOF;
+			DBGC('a');
 		}
 		else if ( ir.state == IR_SOB )
 		{
@@ -134,33 +156,44 @@ void ir_decode_daewoo(u32_t time_now, u8_t pin_now)
 			{
 				// After start-of-byte pulse, a timing pulse is expected
 				ir.state = IR_TIM;
+				DBGC('b');
 			}
 			else
 			{
 				// Start-of-byte pulse out of spec - go back to idle
 				ir.state = IR_IDLE;
+				DBGC('c');
 			}
 		}
 		else if ( ir.state == IR_BIT )
 		{
-			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
+			if ( pwidth < MIN_BIT )
+			{
+				// Data pulse too long - go back to idle
+				ir.state = IR_IDLE;
+				DBGC('d');
+			}
+			else if ( pwidth < MAX_BIT )
 			{
 				// Data pulse: 1 or 0. Shift the bit in, increment the counter
 				ir.shiftreg = ir.shiftreg << 1;
 				if ( pwidth > MIN_ONE )
 					ir.shiftreg |= 0x01;
-				ir.bit++;
+				ir.state = IR_TIM;
+				DBGC('e');
 			}
 			else
 			{
-				// Data pulse out of spec - go back to idle
+				// Data pulse too long - go back to idle
 				ir.state = IR_IDLE;
+				DBGC('f');
 			}
 		}
 		else
 		{
 			// Wrong state; return to idle
 			ir.state = IR_IDLE;
+			DBGC('g');
 		}
 	}
 }
