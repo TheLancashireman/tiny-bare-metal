@@ -143,7 +143,7 @@ int printf(const char *fmt, ...)
 						num = -num;
 					}
 					if ( !longarg )
-						num = (long)(int)num;
+						num = (long)(((unsigned)num) & 0xffff);
 					if ( ch == 'd' || ch == 'u' )
 						str = prt10(num, str);
 					else
