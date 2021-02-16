@@ -34,6 +34,22 @@
 #define ASYNC_RX_PIN	-1
 #endif
 
+#ifndef RBSIZE
+#define RBSIZE	0
+#endif
+
+#if RBSIZE > 0
+
+extern char rbuf[RBSIZE+1];
+extern u8_t rb_in;
+extern u8_t rb_out;
+
+extern void bputc(char c);
+extern int bgetc(void);
+
+#endif
+
+
 #if ASYNC_BITRATE > 0
 
 #if ASYNC_BITRATE == 9600

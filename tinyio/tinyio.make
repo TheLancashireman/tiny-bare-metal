@@ -28,3 +28,4 @@ TINYL_OBJS	+=	$(OBJ_DIR)/putc.o
 TINYL_OBJS	+=	$(OBJ_DIR)/puts.o
 TINYL_OBJS	+=	$(OBJ_DIR)/puts-p.o
 TINYL_OBJS	+=	$(OBJ_DIR)/printf.o
+TINYL_OBJS	+=	$(OBJ_DIR)/bufio.o
