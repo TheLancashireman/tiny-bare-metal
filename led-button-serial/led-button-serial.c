@@ -31,7 +31,7 @@
 #error "btnpin != 0"
 #endif
 #if ASYNC_TX_PIN != 3
-#error "ASYNC_TX_PIN != 2"
+#error "ASYNC_TX_PIN != 3"
 #endif
 
 int main(void)
