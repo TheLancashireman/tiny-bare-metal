@@ -32,41 +32,41 @@ static inline void ir_decode(u32_t t, u8_t p)
  *
  * Note that all the codes start with 0xa8, so only the 2nd byte is relevant
 */
-IRBTN_ONOFF		0xa8a8
-IRBTN_PROG		0xa89c
-IRBTN_1			0xa880
-IRBTN_2			0xa840
-IRBTN_3			0xa8c0
-IRBTN_TVVCR		0xa868
-IRBTN_4			0xa820
-IRBTN_5			0xa8a0
-IRBTN_6			0xa860
-IRBTN_AV		0xa86c
-IRBTN_7			0xa8e0
-IRBTN_8			0xa810
-IRBTN_9			0xa890
-IRBTN_ABOX		0xa8b8
-IRBTN_SKIP30	0xa878
-IRBTN_0			0xa800
-IRBTN_SKIP		0xa8c8	
-IRBTN_EJECT		0xa884
-IRBTN_PAUSE		0xa888
-IRBTN_REW		0xa808
-IRBTN_PLAY		0xa870
-IRBTN_FFWD		0xa8f0
-IRBTN_STOP		0xa8b0
-IRBTN_REC		0xa848
-IRBTN_SPLP		0xa8d8
-IRBTN_PRPLUS	0xa8e8
-IRBTN_MENU		0xa844
-IRBTN_PALSEC	0xa8f8
-IRBTN_LEFT		0xa88c
-IRBTN_OK		0xa894
-IRBTN_RIGHT		0xa8ac
-IRBTN_IPLUS		0xa8fc
-IRBTN_IMINUS	0xa8cc
-IRBTN_PRMINUS	0xa818
-IRBTN_ASEL		0xa858
+#define IRBTN_ONOFF		0xa8a8
+#define IRBTN_PROG		0xa89c
+#define IRBTN_1			0xa880
+#define IRBTN_2			0xa840
+#define IRBTN_3			0xa8c0
+#define IRBTN_TVVCR		0xa868
+#define IRBTN_4			0xa820
+#define IRBTN_5			0xa8a0
+#define IRBTN_6			0xa860
+#define IRBTN_AV		0xa86c
+#define IRBTN_7			0xa8e0
+#define IRBTN_8			0xa810
+#define IRBTN_9			0xa890
+#define IRBTN_ABOX		0xa8b8
+#define IRBTN_SKIP30	0xa878
+#define IRBTN_0			0xa800
+#define IRBTN_SKIP		0xa8c8	
+#define IRBTN_EJECT		0xa884
+#define IRBTN_PAUSE		0xa888
+#define IRBTN_REW		0xa808
+#define IRBTN_PLAY		0xa870
+#define IRBTN_FFWD		0xa8f0
+#define IRBTN_STOP		0xa8b0
+#define IRBTN_REC		0xa848
+#define IRBTN_SPLP		0xa8d8
+#define IRBTN_PRPLUS	0xa8e8
+#define IRBTN_MENU		0xa844
+#define IRBTN_PALSEC	0xa8f8
+#define IRBTN_LEFT		0xa88c
+#define IRBTN_OK		0xa894
+#define IRBTN_RIGHT		0xa8ac
+#define IRBTN_IPLUS		0xa8fc
+#define IRBTN_IMINUS	0xa8cc
+#define IRBTN_PRMINUS	0xa818
+#define IRBTN_ASEL		0xa858
 
 
 #endif
