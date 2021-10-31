@@ -33,7 +33,7 @@ struct ir_s ir;
 /* PCINT0_vect() - handle a state change interrupt on the IR pin
  *
  * Note that this ISR will trigger for state changes for all pins that are enabled.
- * When anoother pin is monitored this way and interrupt demux is needed.
+ * When another pin is monitored this way an interrupt demux is needed.
 */
 ISR(PCINT0_vect)
 {
