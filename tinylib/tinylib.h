@@ -41,6 +41,9 @@
 #error "Unsupported HZ value"
 #endif
 
+#define ms_to_ticks(ms)		(((u32_t)(ms) * 1000)/T0_RESOLUTION)
+#define us_to_ticks(us)		(((u32_t)(us) + T0_RESOLUTION  - 1)/T0_RESOLUTION)
+
 // 64-bit time only if required.
 #ifndef TIME64
 #define TIME64	0
@@ -110,14 +113,14 @@ static inline void enable(void)
 */
 static inline void delay_ms(u16_t ms)
 {
-	delay_ticks(((u32_t)ms * 1000)/T0_RESOLUTION);
+	delay_ticks(ms_to_ticks(ms));
 }
 
 /* delay_us() - delay for a number of microseconds
 */
 static inline void delay_us(u32_t us)
 {
-	delay_ticks((us + T0_RESOLUTION  - 1)/T0_RESOLUTION);
+	delay_ticks(us_to_ticks(us));
 }
 
 #endif
