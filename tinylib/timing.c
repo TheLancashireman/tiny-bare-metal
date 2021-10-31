@@ -40,8 +40,12 @@ void timing_init(void)
 	TCNT0 = 0x00;						// Clear the counter
 	OCR0A = 0x00;						// Clear both output-compare registers
 	OCR0B = 0x00;
+#ifdef TIMSK
 	TIMSK = (TIMSK & 0x18) | 0x02;		// Disable Timer0 output-compare interrupts; enable overflow interrupt
+#endif
+#ifdef TIFR
 	TIFR = 0x1a;						// Clear all pending interrupts for Timer0
+#endif
 	(void)restore(s);
 }
 
