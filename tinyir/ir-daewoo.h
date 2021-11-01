@@ -63,8 +63,8 @@ static inline void ir_decode(u32_t t, u8_t p)
 #define IRBTN_LEFT		0xa88c
 #define IRBTN_OK		0xa894
 #define IRBTN_RIGHT		0xa8ac
-#define IRBTN_IPLUS		0xa8fc
-#define IRBTN_IMINUS	0xa8cc
+#define IRBTN_IMINUS	0xa8fc
+#define IRBTN_IPLUS		0xa8cc
 #define IRBTN_PRMINUS	0xa818
 #define IRBTN_ASEL		0xa858
 
