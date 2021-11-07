@@ -10,7 +10,24 @@ and linker do a lot of the work.
 You need to install avr-gcc. On linux systems it might be just a matter of installing the gcc-avr package.
 If gcc-avr isn't in the package repository, the easiest way might be to download and install arduino.
 
-You'll also need an in-system programmer (see isp/) and avrdude.
+You'll also need avrdude and an in-system programmer. For a quick & dirty programmer, look in isp/. Or
+build my "Joat" project.
+
+# Useful avrdude commands
+
+```
+avrdude -P <SERIALPORT> -b 19200 -c avrisp -p t85 -U flash:w:FILENAME.ihex:i
+```
+- programs the Intel-hex file called FILENAME.ihex into the attiny
+
+```
+avrdude -P <SERIALPORT> -b 19200  -c avrisp -p t85 -U lfuse:w:VAL:m
+```
+- sets the LFUSE to VAL
+Some useful LFUSE values:
+* 0x62 - CKSEL = 2 (internal 8 MHz oscillator) CKDIV8 = 0 (divide by 8) --> 1 MHz
+* 0xe2 - CKSEL = 2 (internal 8 MHz oscillator) CKDIV8 = 1 (divide by 1) --> 8 MHz
+* 0xe1 - CKSEL = 1 (PLL/4 = 16 MHz) CKDIV8 = 1 (divide by 1) --> 16 MHz
 
 ## License, disclaimer etc.
 
