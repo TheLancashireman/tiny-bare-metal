@@ -15,15 +15,16 @@ build my "Joat" project.
 
 # Useful avrdude commands
 
+Program an Intel-hex file called FILENAME.ihex into the attiny:
 ```
 avrdude -P <SERIALPORT> -b 19200 -c avrisp -p t85 -U flash:w:FILENAME.ihex:i
 ```
-- programs the Intel-hex file called FILENAME.ihex into the attiny
 
+Set the LFUSE to VAL:
 ```
 avrdude -P <SERIALPORT> -b 19200  -c avrisp -p t85 -U lfuse:w:VAL:m
 ```
-- sets the LFUSE to VAL
+
 Some useful LFUSE values:
 * 0x62 - CKSEL = 2 (internal 8 MHz oscillator) CKDIV8 = 0 (divide by 8) --> 1 MHz
 * 0xe2 - CKSEL = 2 (internal 8 MHz oscillator) CKDIV8 = 1 (divide by 1) --> 8 MHz
