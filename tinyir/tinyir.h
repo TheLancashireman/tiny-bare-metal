@@ -25,6 +25,8 @@
 #ifdef TINYIR_REMOTE
 #include TINYIR_REMOTE
 #else
+typedef u16_t ir_sr_t;
+typedef u16_t ir_key_t;
 static inline void ir_decode(u32_t t, u8_t p)
 {
 }
@@ -33,8 +35,8 @@ static inline void ir_decode(u32_t t, u8_t p)
 struct ir_s
 {
 	u32_t time;			// Time of last transition
-	u16_t shiftreg;		// Data shifted into this
-	u16_t data;			// Complete keypress stored here
+	ir_sr_t shiftreg;	// Data shifted into this
+	ir_key_t data;		// Complete keypress stored here
 	u8_t bit;			// bit counter for shiftreg
 	u8_t pinstate;		// Current/last state of pin
 	u8_t state;			// Current decoder state

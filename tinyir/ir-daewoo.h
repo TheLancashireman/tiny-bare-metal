@@ -27,6 +27,11 @@ static inline void ir_decode(u32_t t, u8_t p)
 	ir_decode_daewoo(t, p);
 }
 
+/* 16-bit shift register and key data needed
+*/
+typedef u16_t ir_sr_t;
+typedef u16_t ir_key_t;
+
 /* 
  * Buttons on the remote control, left to right, top to bottom
  *
