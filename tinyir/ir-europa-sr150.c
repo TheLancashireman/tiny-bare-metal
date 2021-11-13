@@ -57,8 +57,8 @@
 
 #define MIN_SOF		IR_MS(8000)
 #define MAX_SOF		IR_MS(10000)
-#define MIN_SOW		IR_MS(3500)
-#define MAX_SOW		IR_MS(4500)
+#define MIN_SOW		IR_MS(3000)
+#define MAX_SOW		IR_MS(5000)
 #define MIN_TIM		IR_MS(560)
 #define MAX_TIM		IR_MS(760)
 #define MIN_BIT		IR_MS(100)
@@ -67,8 +67,8 @@
 
 /* Repeat signal
 */
-#define MIN_SOR		IR_MS(1500)
-#define MAX_SOR		IR_MS(2500)
+#define MIN_SOR		IR_MS(1000)
+#define MAX_SOR		IR_MS(3000)
 
 void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 {
@@ -117,7 +117,7 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 
 				if ( ir.bit < 33 )
 				{
-					// After other timing pulses a data bit is expected
+					// After timing pulses a data bit is expected
 					ir.state = IR_BIT;
 					DBGC('4');
 				}
