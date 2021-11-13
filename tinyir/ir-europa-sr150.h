@@ -27,14 +27,41 @@ static inline void ir_decode(u32_t t, u8_t p)
 	ir_decode_europa_sr150(t, p);
 }
 
-/* 16-bit shift register needed
+/* 32-bit shift register needed
 */
 typedef u32_t ir_sr_t;
+typedef u32_t ir_key_t;
 
 /* 
  * Buttons on the remote control, left to right, top to bottom
  *
- * ToDo
+ * standby	0x000000ff
+ * mute		0x0000c03f
+ * mode		0x0000a05f
+ * demp		0x0000609f
+ * digit_1	0x000010ef
+ * digit_2	0x0000906f
+ * digit_3	0x000050af
+ * ch_up	0x0000d02f
+ * digit_4	0x000030cf
+ * digit_5	0x0000b04f
+ * digit_6	0x0000708f
+ * ch_dn	0x0000f00f
+ * digit_7	0x000008f7
+ * digit_8	0x00008877
+ * digit_9	0x000048b7
+ * digit_0	0x0000a857
+ * vid_up	0x000018e7
+ * ab		0x00009867
+ * aud_up	0x000058a7
+ * vid_dn	0x000038c7
+ * vh		0x0000b847
+ * aud_dn	0x00007887
+ *
+ * From this we can see that:
+ *	- the first two bytes are always zero
+ *	- the 3rd byte is the inverse of the 4th byte
+ *	- 
 */
 #define IRBTN_ONOFF		0xa8a8
 #define IRBTN_PROG		0xa89c
