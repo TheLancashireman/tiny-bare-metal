@@ -55,7 +55,7 @@ int main(void)
 
 		if ( ir_receive(&ir_data) )
 		{
-			printf(PSTR("\nir_data = 0x%04x\n"), ir_data);
+			printf(PSTR("\nir_data = 0x%08x, \n"), ir_data);
 		}
 
 		int c = bgetc();
