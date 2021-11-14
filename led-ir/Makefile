@@ -40,10 +40,13 @@ CC_OPT		+=	-I $(TLIB_DIR)
 CC_OPT		+=	-I $(TIO_DIR)
 CC_OPT		+=	-I $(TIR_DIR)
 CC_OPT		+=	-D ASYNC_BITRATE=9600
-CC_OPT		+=	-D ASYNC_TX_PIN=PB3
-CC_OPT		+=	-D TINYIR_REMOTE="\"ir-daewoo.h\""
+CC_OPT		+=	-D ASYNC_TX_PIN=PB4
 CC_OPT		+=	-D IR_RX_PIN=PB0
 CC_OPT		+=	-D RBSIZE=31
+
+# Handset selection
+CC_OPT		+=	-D TINYIR_REMOTE="\"ir-europa-sr150.h\""
+#CC_OPT		+=	-D TINYIR_REMOTE="\"ir-daewoo.h\""
 
 LD_OPT		+=	-mmcu=attiny85
 LD_OPT		+=	-Wl,--gc-sections

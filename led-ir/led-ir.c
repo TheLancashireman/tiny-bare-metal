@@ -22,12 +22,17 @@
 #include "tinyir.h"
 #include <avr/pgmspace.h>
 
+/* This project is an example of how to use the tinyir decoders.
+ * It also acts as a test-bed for development of new decoders.
+*/
+
 #define ledpin  PB1
 
 int main(void)
 {
 	u16_t count = 0;
-	u16_t ir_data;
+	ir_sr_t ir_sr;
+	ir_key_t ir_data;
 
 	timing_init();
 	pin_mode(ledpin, OUTPUT);
@@ -55,7 +60,21 @@ int main(void)
 
 		if ( ir_receive(&ir_data) )
 		{
-			printf(PSTR("\nir_data = 0x%08x, \n"), ir_data);
+			ir_sr = ir.shiftreg;
+
+			if ( sizeof(ir_data) > 2 )
+				printf(PSTR("\nkey = 0x%08lx  "), ir_data);
+			else if ( sizeof(ir_data) > 1 )
+				printf(PSTR("\nkey = 0x%04x  "), ir_data);
+			else
+				printf(PSTR("\nkey = 0x%02x  "), ir_data);
+
+			if ( sizeof(ir_sr) > 2 )
+				printf(PSTR("raw data = 0x%08lx\n"), ir_sr);
+			else if ( sizeof(ir_sr) > 1 )
+				printf(PSTR("raw data = 0x%04x\n"), ir_sr);
+			else
+				printf(PSTR("raw data = 0x%02x\n"), ir_sr);
 		}
 
 		int c = bgetc();
