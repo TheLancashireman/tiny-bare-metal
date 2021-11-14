@@ -30,74 +30,74 @@ static inline void ir_decode(u32_t t, u8_t p)
 /* 32-bit shift register needed
 */
 typedef u32_t ir_sr_t;
-typedef u32_t ir_key_t;
+typedef u8_t ir_key_t;
 
 /* 
  * Buttons on the remote control, left to right, top to bottom
  *
- * standby	0x000000ff
- * mute		0x0000c03f
- * mode		0x0000a05f
- * demp		0x0000609f
- * digit_1	0x000010ef
- * digit_2	0x0000906f
- * digit_3	0x000050af
- * ch_up	0x0000d02f
- * digit_4	0x000030cf
- * digit_5	0x0000b04f
- * digit_6	0x0000708f
- * ch_dn	0x0000f00f
- * digit_7	0x000008f7
- * digit_8	0x00008877
- * digit_9	0x000048b7
- * digit_0	0x0000a857
- * vid_up	0x000018e7
- * ab		0x00009867
- * aud_up	0x000058a7
- * vid_dn	0x000038c7
- * vh		0x0000b847
- * aud_dn	0x00007887
+ * standby	0x12ed00ff
+ * mute		0x12edc03f
+ * mode		0x12eda05f
+ * demp		0x12ed609f
+ * digit_1	0x12ed10ef
+ * digit_2	0x12ed906f
+ * digit_3	0x12ed50af
+ * ch_up	0x12edd02f
+ * digit_4	0x12ed30cf
+ * digit_5	0x12edb04f
+ * digit_6	0x12ed708f
+ * ch_dn	0x12edf00f
+ * digit_7	0x12ed08f7
+ * digit_8	0x12ed8877
+ * digit_9	0x12ed48b7
+ * digit_0	0x12eda857
+ * vid_up	0x12ed18e7
+ * ab		0x12ed9867
+ * aud_up	0x12ed58a7
+ * vid_dn	0x12ed38c7
+ * vh		0x12edb847
+ * aud_dn	0x12ed7887
  *
  * From this we can see that:
- *	- the first two bytes are always zero
+ *	- the first two bytes are always 0x12ed
  *	- the 3rd byte is the inverse of the 4th byte
+ *	- the final digit is always f or 7
  *	- 
 */
-#define IRBTN_ONOFF		0xa8a8
-#define IRBTN_PROG		0xa89c
-#define IRBTN_1			0xa880
-#define IRBTN_2			0xa840
-#define IRBTN_3			0xa8c0
-#define IRBTN_TVVCR		0xa868
-#define IRBTN_4			0xa820
-#define IRBTN_5			0xa8a0
-#define IRBTN_6			0xa860
-#define IRBTN_AV		0xa86c
-#define IRBTN_7			0xa8e0
-#define IRBTN_8			0xa810
-#define IRBTN_9			0xa890
-#define IRBTN_ABOX		0xa8b8
-#define IRBTN_SKIP30	0xa878
-#define IRBTN_0			0xa800
-#define IRBTN_SKIP		0xa8c8	
-#define IRBTN_EJECT		0xa884
-#define IRBTN_PAUSE		0xa888
-#define IRBTN_REW		0xa808
-#define IRBTN_PLAY		0xa870
-#define IRBTN_FFWD		0xa8f0
-#define IRBTN_STOP		0xa8b0
-#define IRBTN_REC		0xa848
-#define IRBTN_SPLP		0xa8d8
-#define IRBTN_PRPLUS	0xa8e8
-#define IRBTN_MENU		0xa844
-#define IRBTN_PALSEC	0xa8f8
-#define IRBTN_LEFT		0xa88c
-#define IRBTN_OK		0xa894
-#define IRBTN_RIGHT		0xa8ac
-#define IRBTN_IMINUS	0xa8fc
-#define IRBTN_IPLUS		0xa8cc
-#define IRBTN_PRMINUS	0xa818
-#define IRBTN_ASEL		0xa858
+
+#define IR_FIXED_VAL	0x12ed0000
+#define IR_FIXED_BITS	0xffff0000
+#define IR_CHECKSUM(x)	( ( (u8_t)(~(u8_t)((x) >> 8)) ) == ( (u8_t)(x) ) )
+
+#define IRBTN_STANDBY	0xff
+#define IRBTN_MUTE		0x3f
+#define IRBTN_MODE		0x5f
+#define IRBTN_DEMP		0x9f
+#define IRBTN_1			0xef
+#define IRBTN_2			0x6f
+#define IRBTN_3			0xaf
+#define IRBTN_CH_UP		0x2f
+#define IRBTN_4			0xcf
+#define IRBTN_5			0x4f
+#define IRBTN_6			0x8f
+#define IRBTN_CH_DN		0x0f
+#define IRBTN_7			0xf7
+#define IRBTN_8			0x77
+#define IRBTN_9			0xb7
+#define IRBTN_0			0x57
+#define IRBTN_VID_UP	0xe7
+#define IRBTN_AB		0x67
+#define IRBTN_AUD_UP	0xa7
+#define IRBTN_VID_DN	0xc7
+#define IRBTN_VH		0x47
+#define IRBTN_AUD_DN	0x87
+
+/* Error codes returned instead of keypress
+*/
+#define IRERR_CHK1		0x0e	// Upper 16 bits check error
+#define IRERR_CHK2		0x1e	// Lower 16 bits checksum error
+
+#define IR_ISERR(x)		(((x) & 0x0f) == 0x0e)
 
 
 #endif

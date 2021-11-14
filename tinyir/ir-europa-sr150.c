@@ -123,11 +123,31 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 				}
 				else if ( ir.bit == 33 )
 				{
-					// Exactly 33 timing pulses received; move to holding store and set new data flag
-					ir.data = ir.shiftreg;
+					// Exactly 33 timing pulses received;
+					// Check the data
+					if ( (ir.shiftreg & IR_FIXED_BITS) == IR_FIXED_VAL )
+					{
+						if ( IR_CHECKSUM(ir.shiftreg) )
+						{
+							// OK; move to holding store and set new data flag
+							ir.data = (ir_key_t)ir.shiftreg;
+							DBGC('5');
+						}
+						else
+						{
+							// Checksum error
+							ir.data = IRERR_CHK2;
+							DBGC('F');
+						}
+					}
+					else
+					{
+						// Fixed bits check error
+						ir.data = IRERR_CHK1;
+						DBGC('E');
+					}
 					ir.newdata = 1;
 					ir.state = IR_IDLE;
-					DBGC('5');
 				}
 				else
 				{
@@ -148,7 +168,8 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 			// End of timing pulse after key-repeat
 			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
 			{
-				// Timing pulse after repeat indicator - ToDo
+				// Timing pulse after repeat indicator: set indicator; key stays same.
+				ir.newdata = 1;
 				ir.state = IR_IDLE;
 				DBGC('9');
 			}
