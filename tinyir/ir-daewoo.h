@@ -73,5 +73,9 @@ typedef u16_t ir_key_t;
 #define IRBTN_PRMINUS	0xa818
 #define IRBTN_ASEL		0xa858
 
+/* No error codes defined yet
+*/
+#define IR_ISERR(x)		0
+
 
 #endif
