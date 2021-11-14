@@ -42,7 +42,7 @@ ISR(PCINT0_vect)
 
 /* ir_receive() - read out a new result from the IR decoder
 */
-u8_t ir_receive(u16_t *data)
+u8_t ir_receive(ir_key_t *data)
 {
 	if ( ir.newdata )
 	{

@@ -46,6 +46,6 @@ struct ir_s
 extern struct ir_s ir;
 
 extern void ir_init(void);
-extern u8_t ir_receive(u16_t *data);
+extern u8_t ir_receive(ir_key_t *data);
 
 #endif
