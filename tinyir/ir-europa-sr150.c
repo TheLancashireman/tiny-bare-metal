@@ -1,4 +1,4 @@
-/* ir-europa-sr150.c - IR receiver (Europa SR-150)
+/* ir-europa-sr150.c - Legacy IR receiver (Europa SR-150)
  *
  * (c) David Haworth
  *
@@ -21,31 +21,14 @@
 #include "tinyir.h"
 #include "tinyio.h"
 
+/* This decoder has been superseded by ir_decoder_A()
+*/
+
 //#define DBGC(x)	bputc(x)
 #define DBGC(x)		do { } while (0)
 
-/*	Data stream for Europa SR-150 handset
- *   
- *  ________          ____   _   _   _   _   _   _   _   _  .....  _   _   _   _   _   _   _   _   _________
- *          |________|    |_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|x|_....._|x|_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|
- *  I        a        b                                      b                                      I
- *
- *  Idle = 1
- *  Start of frame (a) = low  approx 9 ms
- *  Start of word  (b) = high approx 4 ms
- *  Bit marker (_)     = low  approx 0.66ms
- *  Bit value (x)      = high approx 0.5 ms (0) or 1.5 ms(1)   32 of these
- *
- *  ________          ____   ______
- *          |________|    |_|
- *  I        a       b                                      b                                      I
- *
- *  Idle = 1
- *  Start of frame  (a) = low  approx 9 ms
- *  Start of repeat (b) = high approx 2 ms
- *  Bit marker (_)      = low  approx 0.66ms
+/* State machine states
 */
-
 #define IR_IDLE		0	// Idling - wait for start of frame
 #define IR_SOF		1	// Start of frame
 #define IR_SOW		2	// Start of word
@@ -53,23 +36,7 @@
 #define IR_BIT		4	// Bit pulse
 #define IR_EOR		5	// Timing pulse
 
-#define IR_MS(x)	((x)/T0_RESOLUTION)
-
-#define MIN_SOF		IR_MS(8000)
-#define MAX_SOF		IR_MS(10000)
-#define MIN_SOW		IR_MS(3000)
-#define MAX_SOW		IR_MS(5000)
-#define MIN_TIM		IR_MS(560)
-#define MAX_TIM		IR_MS(760)
-#define MIN_BIT		IR_MS(100)
-#define MIN_ONE		IR_MS(1000)
-#define MAX_BIT		IR_MS(2500)
-
-/* Repeat signal
-*/
-#define MIN_SOR		IR_MS(1000)
-#define MAX_SOR		IR_MS(3000)
-
+#if IR_DECODER_TYPE == 'X'
 void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 {
 	if ( pin_now == ir.pinstate )	
@@ -93,7 +60,7 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		if ( ir.state == IR_SOF )
 		{
 			// End of SOF
-			if ( pwidth > MIN_SOF && pwidth < MAX_SOF )
+			if ( pwidth > IR_MIN_SOF && pwidth < IR_MAX_SOF )
 			{
 				// SOF within limits - now in SOW
 				ir.state = IR_SOW;
@@ -111,7 +78,7 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		else if ( ir.state == IR_TIM )
 		{
 			// End of timing pulse between bits
-			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
+			if ( pwidth > IR_MIN_TIM && pwidth < IR_MAX_TIM )
 			{
 				ir.bit++;
 
@@ -166,7 +133,7 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		else if ( ir.state == IR_EOR )
 		{
 			// End of timing pulse after key-repeat
-			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
+			if ( pwidth > IR_MIN_TIM && pwidth < IR_MAX_TIM )
 			{
 				// Timing pulse after repeat indicator: set indicator; key stays same.
 				ir.newdata = 1;
@@ -198,13 +165,13 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		}
 		else if ( ir.state == IR_SOW )
 		{
-			if ( pwidth > MIN_SOW && pwidth < MAX_SOW )
+			if ( pwidth > IR_MIN_SOW && pwidth < IR_MAX_SOW )
 			{
 				// After start-of-word pulse, a timing pulse is expected
 				ir.state = IR_TIM;
 				DBGC('b');
 			}
-			else if ( pwidth > MIN_SOR && pwidth < MAX_SOR )
+			else if ( pwidth > IR_MIN_SOR && pwidth < IR_MAX_SOR )
 			{
 				// After start-of-repeat pulse, a timing pulse is expected
 				ir.state = IR_EOR;
@@ -219,17 +186,17 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		}
 		else if ( ir.state == IR_BIT )
 		{
-			if ( pwidth < MIN_BIT )
+			if ( pwidth < IR_MIN_BIT )
 			{
 				// Data pulse too short - go back to idle
 				ir.state = IR_IDLE;
 				DBGC('d');
 			}
-			else if ( pwidth < MAX_BIT )
+			else if ( pwidth < IR_MAX_BIT )
 			{
 				// Data pulse: 1 or 0. Shift the bit in, increment the counter
 				ir.shiftreg = ir.shiftreg << 1;
-				if ( pwidth > MIN_ONE )
+				if ( pwidth > IR_MIN_ONE )
 					ir.shiftreg |= 0x01;
 				ir.state = IR_TIM;
 				DBGC('e');
@@ -249,3 +216,4 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		}
 	}
 }
+#endif

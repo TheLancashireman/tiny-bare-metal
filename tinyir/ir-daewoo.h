@@ -20,62 +20,109 @@
 #ifndef IR_DAEWOO_H
 #define IR_DAEWOO_H	1
 
-extern void ir_decode_daewoo(u32_t time_now, u8_t pin_now);
+/*	Data stream for Daewoo VCR handset
+ *   
+ *  ________          ____   _   _   _   _   _   _   _   _   ____   _   _   _   _   _   _   _   _   _________
+ *          |________|    |_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|    |_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|
+ *  I        a        b                                      b                                      I
+ *
+ *  Idle = 1
+ *  Start of frame (a) = low  approx 8 ms
+ *  Start of byte  (b) = high approx 4 ms
+ *  Bit marker (_)     = low  approx 1ms
+ *  Bit value (x)      = high approx 1 ms (0) or 2 ms(1)
+*/
 
-static inline void ir_decode(u32_t t, u8_t p)
-{
-	ir_decode_daewoo(t, p);
-}
-
-/* 16-bit shift register and key data needed
+/* 16-bit shift register and 8-bit key data needed
 */
 typedef u16_t ir_sr_t;
-typedef u16_t ir_key_t;
+typedef u8_t ir_key_t;
+
+#if IR_USE_NEW_DECODER
+
+#define IR_DECODER_TYPE		'A'
+#define ir_decode(t, p)		ir_decoder_A(t, p)
+
+#else
+
+#define IR_DECODER_TYPE		'Z'
+extern void ir_decode_daewoo(u32_t time_now, u8_t pin_now);
+#define ir_decode(t, p)		ir_decode_daewoo(t, p)
+
+#endif
+
+/* Decoder configuration (bit timing, etc.)
+ *
+ * There is no special repeat signal from this handset. The keycode just repeats.
+ * There is a separator between bytes, after timing bit 9.
+ * The upper 8 bits of the raw code are always 0xa800.
+ * There is no checksum in the raw code.
+*/
+
+#define IR_NBITS		18				// Total number of timing bits
+
+#define IR_MIN_SOF		IR_MS(7000)
+#define IR_MAX_SOF		IR_MS(9000)
+#define IR_MIN_SOW		IR_MS(3000)
+#define IR_MAX_SOW		IR_MS(5000)
+#define IR_MIN_TIM		IR_MS(100)
+#define IR_MAX_TIM		IR_MS(1500)
+#define IR_MIN_BIT		IR_MS(100)
+#define IR_MIN_ONE		IR_MS(1200)
+#define IR_MAX_BIT		IR_MS(2500)
+
+#define IR_IS_SPACER(x)	((x) == 9)
+
+#define IR_FIXED_BITS	0xff00			// Upper 8 bits ...
+#define IR_FIXED_VAL	0xa800			// ... always a8
+#define IR_CHECKSUM(x)	1				// Always OK
+
+#define IR_SR_TO_KEY(x)	((ir_key_t)(x))
 
 /* 
  * Buttons on the remote control, left to right, top to bottom
- *
- * Note that all the codes start with 0xa8, so only the 2nd byte is relevant
 */
-#define IRBTN_ONOFF		0xa8a8
-#define IRBTN_PROG		0xa89c
-#define IRBTN_1			0xa880
-#define IRBTN_2			0xa840
-#define IRBTN_3			0xa8c0
-#define IRBTN_TVVCR		0xa868
-#define IRBTN_4			0xa820
-#define IRBTN_5			0xa8a0
-#define IRBTN_6			0xa860
-#define IRBTN_AV		0xa86c
-#define IRBTN_7			0xa8e0
-#define IRBTN_8			0xa810
-#define IRBTN_9			0xa890
-#define IRBTN_ABOX		0xa8b8
-#define IRBTN_SKIP30	0xa878
-#define IRBTN_0			0xa800
-#define IRBTN_SKIP		0xa8c8	
-#define IRBTN_EJECT		0xa884
-#define IRBTN_PAUSE		0xa888
-#define IRBTN_REW		0xa808
-#define IRBTN_PLAY		0xa870
-#define IRBTN_FFWD		0xa8f0
-#define IRBTN_STOP		0xa8b0
-#define IRBTN_REC		0xa848
-#define IRBTN_SPLP		0xa8d8
-#define IRBTN_PRPLUS	0xa8e8
-#define IRBTN_MENU		0xa844
-#define IRBTN_PALSEC	0xa8f8
-#define IRBTN_LEFT		0xa88c
-#define IRBTN_OK		0xa894
-#define IRBTN_RIGHT		0xa8ac
-#define IRBTN_IMINUS	0xa8fc
-#define IRBTN_IPLUS		0xa8cc
-#define IRBTN_PRMINUS	0xa818
-#define IRBTN_ASEL		0xa858
+#define IRBTN_ONOFF		0xa8
+#define IRBTN_PROG		0x9c
+#define IRBTN_1			0x80
+#define IRBTN_2			0x40
+#define IRBTN_3			0xc0
+#define IRBTN_TVVCR		0x68
+#define IRBTN_4			0x20
+#define IRBTN_5			0xa0
+#define IRBTN_6			0x60
+#define IRBTN_AV		0x6c
+#define IRBTN_7			0xe0
+#define IRBTN_8			0x10
+#define IRBTN_9			0x90
+#define IRBTN_ABOX		0xb8
+#define IRBTN_SKIP30	0x78
+#define IRBTN_0			0x00
+#define IRBTN_SKIP		0xc8	
+#define IRBTN_EJECT		0x84
+#define IRBTN_PAUSE		0x88
+#define IRBTN_REW		0x08
+#define IRBTN_PLAY		0x70
+#define IRBTN_FFWD		0xf0
+#define IRBTN_STOP		0xb0
+#define IRBTN_REC		0x48
+#define IRBTN_SPLP		0xd8
+#define IRBTN_PRPLUS	0xe8
+#define IRBTN_MENU		0x44
+#define IRBTN_PALSEC	0xf8
+#define IRBTN_LEFT		0x8c
+#define IRBTN_OK		0x94
+#define IRBTN_RIGHT		0xac
+#define IRBTN_IMINUS	0xfc
+#define IRBTN_IPLUS		0xcc
+#define IRBTN_PRMINUS	0x18
+#define IRBTN_ASEL		0x58
 
-/* No error codes defined yet
+/* The last digit of the keycode is always a multiple of 4, so we can use 0x?e as error codes.
 */
-#define IR_ISERR(x)		0
+#define IR_ISERR(x)		( ((x) & 0x0f) == 0x0e )
 
+#define IRERR_CHK1		0x1e
+#define IRERR_CHK2		0x2e
 
 #endif

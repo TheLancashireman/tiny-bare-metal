@@ -22,6 +22,8 @@
 
 #include "tinylib.h"
 
+#define IR_USE_NEW_DECODER	1
+
 #ifdef TINYIR_REMOTE
 #include TINYIR_REMOTE
 #else
@@ -32,6 +34,12 @@ static inline void ir_decode(u32_t t, u8_t p)
 }
 #endif
 
+/* Convert time in microseconds to timer ticks
+*/
+#define IR_MS(x)	((x)/T0_RESOLUTION)
+
+/* Data structure for all decoders
+*/
 struct ir_s
 {
 	u32_t time;			// Time of last transition
@@ -47,5 +55,7 @@ extern struct ir_s ir;
 
 extern void ir_init(void);
 extern u8_t ir_receive(ir_key_t *data);
+
+extern void ir_decoder_A(u32_t time_now, u8_t pin_now);
 
 #endif

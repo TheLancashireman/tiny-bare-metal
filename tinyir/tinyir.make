@@ -25,3 +25,4 @@
 TINYL_OBJS	+=	$(OBJ_DIR)/tinyir.o
 TINYL_OBJS	+=	$(OBJ_DIR)/ir-daewoo.o
 TINYL_OBJS	+=	$(OBJ_DIR)/ir-europa-sr150.o
+TINYL_OBJS	+=	$(OBJ_DIR)/ir-decoder-A.o

@@ -1,4 +1,4 @@
-/* ir-europa-sr150.c - IR receiver (Europa SR-150)
+/* ir-decoder-A.c - IR receiver type A
  *
  * (c) David Haworth
  *
@@ -21,31 +21,13 @@
 #include "tinyir.h"
 #include "tinyio.h"
 
-//#define DBGC(x)	bputc(x)
-#define DBGC(x)		do { } while (0)
-
-/*	Data stream for Europa SR-150 handset
- *   
- *  ________          ____   _   _   _   _   _   _   _   _  .....  _   _   _   _   _   _   _   _   _________
- *          |________|    |_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|x|_....._|x|_|x|_|x|_|x|_|x|_|x|_|x|_|x|_|
- *  I        a        b                                      b                                      I
- *
- *  Idle = 1
- *  Start of frame (a) = low  approx 9 ms
- *  Start of word  (b) = high approx 4 ms
- *  Bit marker (_)     = low  approx 0.66ms
- *  Bit value (x)      = high approx 0.5 ms (0) or 1.5 ms(1)   32 of these
- *
- *  ________          ____   ______
- *          |________|    |_|
- *  I        a       b                                      b                                      I
- *
- *  Idle = 1
- *  Start of frame  (a) = low  approx 9 ms
- *  Start of repeat (b) = high approx 2 ms
- *  Bit marker (_)      = low  approx 0.66ms
+/* This decoder handles the following handsets:
+ * 	- Daewoo VCR handset (unmarked)
+ *	- Europa SR-150
 */
 
+/* State machine states
+*/
 #define IR_IDLE		0	// Idling - wait for start of frame
 #define IR_SOF		1	// Start of frame
 #define IR_SOW		2	// Start of word
@@ -53,24 +35,21 @@
 #define IR_BIT		4	// Bit pulse
 #define IR_EOR		5	// Timing pulse
 
-#define IR_MS(x)	((x)/T0_RESOLUTION)
 
-#define MIN_SOF		IR_MS(8000)
-#define MAX_SOF		IR_MS(10000)
-#define MIN_SOW		IR_MS(3000)
-#define MAX_SOW		IR_MS(5000)
-#define MIN_TIM		IR_MS(560)
-#define MAX_TIM		IR_MS(760)
-#define MIN_BIT		IR_MS(100)
-#define MIN_ONE		IR_MS(1000)
-#define MAX_BIT		IR_MS(2500)
-
-/* Repeat signal
+/* Debugging feature
+ *
+ * Note: bputc() puts a character into a ringbuffer. A background job is needed to transfer the
+ * characters to the output port. Bit-banging the output at interrupt level would be too slow.
 */
-#define MIN_SOR		IR_MS(1000)
-#define MAX_SOR		IR_MS(3000)
+//#define DBGC(x)	bputc(x)
+#define DBGC(x)		do { } while (0)
 
-void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
+
+#if IR_DECODER_TYPE == 'A'
+
+/* ir_decoder_A() - decodes the data stream on the fly.
+*/
+void ir_decoder_A(u32_t time_now, u8_t pin_now)
 {
 	if ( pin_now == ir.pinstate )	
 		return;					// No change; spurious interrupt (or different pin changed)
@@ -93,7 +72,7 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		if ( ir.state == IR_SOF )
 		{
 			// End of SOF
-			if ( pwidth > MIN_SOF && pwidth < MAX_SOF )
+			if ( pwidth > IR_MIN_SOF && pwidth < IR_MAX_SOF )
 			{
 				// SOF within limits - now in SOW
 				ir.state = IR_SOW;
@@ -111,26 +90,35 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		else if ( ir.state == IR_TIM )
 		{
 			// End of timing pulse between bits
-			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
+			if ( pwidth > IR_MIN_TIM && pwidth < IR_MAX_TIM )
 			{
 				ir.bit++;
 
-				if ( ir.bit < 33 )
+#ifdef IR_IS_SPACER
+				if ( IR_IS_SPACER(ir.bit) )
+				{
+					// After some timing pulses, a spacing pulse is expected
+					ir.state = IR_SOW;
+					DBGC('3');
+				}
+				else
+#endif
+				if ( ir.bit < IR_NBITS )
 				{
 					// After timing pulses a data bit is expected
 					ir.state = IR_BIT;
 					DBGC('4');
 				}
-				else if ( ir.bit == 33 )
+				else if ( ir.bit == IR_NBITS )
 				{
-					// Exactly 33 timing pulses received;
+					// Exactly NBITS timing pulses received;
 					// Check the data
 					if ( (ir.shiftreg & IR_FIXED_BITS) == IR_FIXED_VAL )
 					{
 						if ( IR_CHECKSUM(ir.shiftreg) )
 						{
 							// OK; move to holding store and set new data flag
-							ir.data = (ir_key_t)ir.shiftreg;
+							ir.data = IR_SR_TO_KEY(ir.shiftreg);
 							DBGC('5');
 						}
 						else
@@ -163,10 +151,11 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 				DBGC('7');
 			}
 		}
+#ifdef IR_MIN_SOR		// Handset has special "repeat" code.
 		else if ( ir.state == IR_EOR )
 		{
 			// End of timing pulse after key-repeat
-			if ( pwidth > MIN_TIM && pwidth < MAX_TIM )
+			if ( pwidth > IR_MIN_TIM && pwidth < IR_MAX_TIM )
 			{
 				// Timing pulse after repeat indicator: set indicator; key stays same.
 				ir.newdata = 1;
@@ -180,6 +169,7 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 				DBGC('0');
 			}
 		}
+#endif
 		else
 		{
 			// Wrong state; return to idle
@@ -198,18 +188,20 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		}
 		else if ( ir.state == IR_SOW )
 		{
-			if ( pwidth > MIN_SOW && pwidth < MAX_SOW )
+			if ( pwidth > IR_MIN_SOW && pwidth < IR_MAX_SOW )
 			{
 				// After start-of-word pulse, a timing pulse is expected
 				ir.state = IR_TIM;
 				DBGC('b');
 			}
-			else if ( pwidth > MIN_SOR && pwidth < MAX_SOR )
+#ifdef IR_MIN_SOR		// Handset has special "repeat" code.
+			else if ( pwidth > IR_MIN_SOR && pwidth < IR_MAX_SOR )
 			{
 				// After start-of-repeat pulse, a timing pulse is expected
 				ir.state = IR_EOR;
 				DBGC('r');
 			}
+#endif
 			else
 			{
 				// Start-of-word pulse out of spec - go back to idle
@@ -219,17 +211,17 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		}
 		else if ( ir.state == IR_BIT )
 		{
-			if ( pwidth < MIN_BIT )
+			if ( pwidth < IR_MIN_BIT )
 			{
 				// Data pulse too short - go back to idle
 				ir.state = IR_IDLE;
 				DBGC('d');
 			}
-			else if ( pwidth < MAX_BIT )
+			else if ( pwidth < IR_MAX_BIT )
 			{
 				// Data pulse: 1 or 0. Shift the bit in, increment the counter
 				ir.shiftreg = ir.shiftreg << 1;
-				if ( pwidth > MIN_ONE )
+				if ( pwidth > IR_MIN_ONE )
 					ir.shiftreg |= 0x01;
 				ir.state = IR_TIM;
 				DBGC('e');
@@ -249,3 +241,4 @@ void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now)
 		}
 	}
 }
+#endif
