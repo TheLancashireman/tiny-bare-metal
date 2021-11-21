@@ -146,6 +146,8 @@ extern void ir_decode_europa_sr150(u32_t time_now, u8_t pin_now);
 #define IRBTN_VH		0x47
 #define IRBTN_AUD_DN	0x87
 
+#define IRBTN_NONE		0xf0
+
 /* Error codes returned instead of keypress
 */
 #define IRERR_CHK1		0x0e	// Upper 16 bits check error

@@ -118,6 +118,8 @@ extern void ir_decode_daewoo(u32_t time_now, u8_t pin_now);
 #define IRBTN_PRMINUS	0x18
 #define IRBTN_ASEL		0x58
 
+#define IRBTN_NONE		0xff
+
 /* The last digit of the keycode is always a multiple of 4, so we can use 0x?e as error codes.
 */
 #define IR_ISERR(x)		( ((x) & 0x0f) == 0x0e )
