@@ -19,6 +19,8 @@
 */
 #include "tinylib.h"
 
+#if !PASSIVE_TIME
+
 #if TIME64
 u64_t read_time(void)
 {
@@ -41,4 +43,6 @@ u64_t read_time(void)
 
 	return ((u64_t)t1h << 32) + t1l + l;
 }
+#endif
+
 #endif

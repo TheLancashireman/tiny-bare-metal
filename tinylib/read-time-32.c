@@ -19,6 +19,8 @@
 */
 #include "tinylib.h"
 
+#if !PASSIVE_TIME
+
 u32_t read_time_32(void)
 {
 	u32_t h1;
@@ -35,3 +37,5 @@ u32_t read_time_32(void)
 
 	return h1 + l;
 }
+
+#endif

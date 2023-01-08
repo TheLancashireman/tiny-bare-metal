@@ -27,6 +27,11 @@
 #define HZ	16000000
 #endif
 
+// Assume active timing unless told otherwise
+#ifndef PASSIVE_TIME
+#define PASSIVE_TIME	0
+#endif
+
 // Timer0 clock and resolution
 #if HZ == 16000000
 #define T0_CLKSEL			0x03	// Prescaler 64 --> 250 kHz
@@ -44,7 +49,7 @@
 #define ms_to_ticks(ms)		(((u32_t)(ms) * 1000)/T0_RESOLUTION)
 #define us_to_ticks(us)		(((u32_t)(us) + T0_RESOLUTION  - 1)/T0_RESOLUTION)
 
-// 64-bit time only if required.
+// 64-bit time only if required. (Active timing only)
 #ifndef TIME64
 #define TIME64	0
 #endif
@@ -68,22 +73,26 @@ typedef signed long long s64_t;
 
 /* High-order time bits.
 */
+#if !PASSIVE_TIME
 #if TIME64
 extern volatile u32_t time_high;
 #endif
 extern volatile u32_t time_low;
+#endif
 
 extern void pin_mode_m(u8_t bitmask, u8_t mode);
 extern void pin_set_m(u8_t bitmask, u8_t bitstate);
 extern u8_t disable(void);
 extern u8_t restore(u8_t old);
 extern void timing_init(void);
-extern u32_t read_time_32(void);
 extern void delay_ticks(u32_t ticks);
 extern u8_t reverse_bits(u8_t b);
 
+#if !PASSIVE_TIME
+extern u32_t read_time_32(void);
 #if TIME64
 extern u64_t read_time(void);
+#endif
 #endif
 
 /* pin_mode() - set the mode of a pin passed as a pin number
