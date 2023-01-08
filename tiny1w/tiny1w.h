@@ -1,4 +1,4 @@
-/* w1.h - 1-wire protocol
+/* tiny1w.h - 1-wire protocol
  *
  * (c) David Haworth
  *
@@ -17,10 +17,29 @@
  *  You should have received a copy of the GNU General Public License
  *  along with one-wire.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef W1_H
-#define W1_H	1
+#ifndef TINY1W_H
+#define TINY1W_H	1
 
 #include "tinylib.h"
+
+/* Assume no debug trace if not specified
+*/
+#ifndef W1_DBG
+#define W1_DBG	0
+#endif
+
+#if W1_DBG
+#include "tinyio.h"
+#define W1_PUTC(x)	putc(x)
+#else
+#define W1_PUTC(x)	do { } while (0)
+#endif
+
+/* Assume presence test if not specified
+*/
+#ifndef W1_PRESENCE
+#define W1_PRESENCE	1
+#endif
 
 /* Maxim one-wire protocol (e.g. DS18B20)
  *
@@ -63,7 +82,16 @@
 
 static inline void w1_delay(u16_t us)
 {
-	/* ToDo */
+#if 1
+	delay_us(us);
+#else
+	u16_t loops = us/10;
+	while ( loops > 0 )
+	{
+		loops--;
+		asm(";");
+	}
+#endif
 }
 
 /* w1_read() - read a bit from the 1-wire bus

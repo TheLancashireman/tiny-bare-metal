@@ -42,13 +42,18 @@
 #define DS18B20_INVALID_TEMP	0x8000
 #define DS18B20_SP_LEN			9
 #ifndef DS18B20_PIN
-#define DS18B20_PIN				3
+#define DS18B20_PIN				PB3
 #endif
 
 #endif
 
 static u8_t ds18b20_buffer[DS18B20_SP_LEN];
 static s8_t last_res;
+
+static inline u16_t invalid_temp(void)
+{
+	return DS18B20_INVALID_TEMP + last_res;
+}
 
 /* The functions in this file all assume that the DS18B20 is the only 1-wire on the bus and
  * that it is operating with an external power supply.
@@ -62,11 +67,16 @@ static s8_t last_res;
 */
 static inline void ds18b20_skip_rom(void)
 {
+	W1_PUTC('J');
 	last_res = w1_reset(DS18B20_PIN);
+
+	W1_PUTC('K');
 	if ( last_res == W1_OK )
 	{
+		W1_PUTC('L');
 		ds18b20_send_command(DS18B20_ROM_SKIP);
 	}
+	W1_PUTC('M');
 }
 
 /* dsb1820_is_busy() - check if device is busy after a long-duration command
@@ -104,28 +114,38 @@ s8_t dsb18b20_crc_ok(void)
 */
 u16_t ds18b20_read_temp(void)
 {
+	W1_PUTC('A');
 	ds18b20_skip_rom();
 
+	W1_PUTC('B');
 	if ( last_res != W1_OK )
-		return DS18B20_INVALID_TEMP;
+		return invalid_temp();
 
+	W1_PUTC('C');
 	ds18b20_send_command(DS18B20_FN_CONVERT);
 
+	W1_PUTC('D');
 	while ( dsb1820_is_busy() )
 	{
+		/* ToDo: time limit */
 	}
 
+	W1_PUTC('E');
 	dsb1820_read_scratchpad();
 
+	W1_PUTC('F');
 	if ( last_res != W1_OK )
-		return DS18B20_INVALID_TEMP;
+		return invalid_temp();
 
+	W1_PUTC('G');
 	if ( dsb18b20_crc_ok() )
 	{
+		W1_PUTC('H');
 		return ds18b20_buffer[0] + ds18b20_buffer[1] * 256;
 	}
 	else
 	{
-		return DS18B20_INVALID_TEMP;
+		W1_PUTC('I');
+		return invalid_temp();
 	}
 }

@@ -20,7 +20,7 @@
 #ifndef DS18B20_H
 #define DS18B20_H	1
 
-#include "w1.h"
+#include "tiny1w.h"
 
 /* DS18B20 ROM command codes
 */
@@ -50,7 +50,7 @@
 /* Default value of MCU pin
 */
 #ifndef DS18B20_PIN
-#define DS18B20_PIN				3
+#define DS18B20_PIN				PB3
 #endif
 
 static inline void ds18b20_send_command(u8_t cmd)

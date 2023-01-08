@@ -1,4 +1,4 @@
-/* w1.c - 1-wire protocol
+/* tiny1w.c - 1-wire protocol
  *
  * (c) David Haworth
  *
@@ -17,12 +17,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with one-wire.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "w1.h"
+#include "tiny1w.h"
 
 /* w1_reset() - resets the 1-wire bus
 */
 s8_t w1_reset(u8_t pin)
 {
+	W1_PUTC('a');
 	/* Set pin to low/input
 	*/
 	pin_set(pin, LOW);
@@ -31,37 +32,47 @@ s8_t w1_reset(u8_t pin)
 	/* Ensure pin is high, i.e. no slaves occupying the bus.
 	 * Wait longer than max --> error
 	*/
-	for ( s8_t i = 0; i < W1_TRSTH; i++ )
+	W1_PUTC('b');
+	for ( s16_t i = 0; i < W1_TRSTH; i++ )
 	{
 		w1_delay(1);
 		if ( pin_get(pin) )
 			break;
 	}
 
+	W1_PUTC('c');
 	if ( !pin_get(pin) )
 		return W1_RST_NOTIDLE;
 	
 	/* Set pin to output - drives low - for 480 us
 	*/
+	W1_PUTC('d');
 	pin_mode(pin, OUTPUT);
 	w1_delay(480);
+	W1_PUTC('e');
 	pin_mode(pin, INPUT);
 
 	/* Wait 80 us then sample the input. Input should be low from 60..120 if device is present.
 	*/
+	W1_PUTC('f');
 	w1_delay(80);
+
+#if W1_PRESENCE
 	if ( pin_get(pin) )
 		return W1_RST_NOTPRESENT;
+#endif
 
+	W1_PUTC('g');
 	/* Wait until pin goes high again (longer than max: error)
 	*/
-	for ( s8_t i = 0; i < 240; i++ )
+	for ( s16_t i = 0; i < 240; i++ )
 	{
 		w1_delay(1);
 		if ( pin_get(pin) )
 			break;
 	}
 
+	W1_PUTC('h');
 	if ( !pin_get(pin) )
 		return W1_RST_NOTGONE;
 
