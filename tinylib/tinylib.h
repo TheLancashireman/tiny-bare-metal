@@ -104,7 +104,7 @@ static inline void pin_set(u8_t pin, u8_t hilo)
 */
 static inline u8_t pin_get(u8_t pin)
 {
-	return (PORTB & (0x1<<pin)) != 0x0;
+	return (PINB & (0x1<<pin)) != 0x0;
 }
 
 /* enable() - enable interrupts
