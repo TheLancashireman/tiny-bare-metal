@@ -19,34 +19,6 @@
 */
 #include "ds18b20.h"
 
-#if 0
-
-/* DS18B20 ROM command codes
-*/
-#define DS18B20_ROM_SEARCH	0xf0
-#define DS18B20_ROM_READ	0x33
-#define DS18B20_ROM_MATCH	0x55
-#define DS18B20_ROM_SKIP	0xcc
-#define DS18B20_ROM_ALM_SCH	0xec
-
-/* DS18B20 function codes
-*/
-#define DS18B20_FN_CONVERT	0x44
-#define DS18B20_FN_READ_SP	0x4e
-#define DS18B20_FN_WRITE_SP	0xbe
-#define DS18B20_FN_COPY_SP	0x48
-#define DS18B20_FN_RECALL_E	0xb8
-#define DS18B20_FN_READ_POW	0xb4
-
-
-#define DS18B20_INVALID_TEMP	0x8000
-#define DS18B20_SP_LEN			9
-#ifndef DS18B20_PIN
-#define DS18B20_PIN				PB3
-#endif
-
-#endif
-
 static u8_t ds18b20_buffer[DS18B20_SP_LEN];
 static s8_t last_res;
 
@@ -68,7 +40,7 @@ static inline u16_t invalid_temp(void)
 static inline void ds18b20_skip_rom(void)
 {
 	W1_PUTC('J');
-	last_res = w1_reset(DS18B20_PIN);
+	last_res = w1_busreset(DS18B20_MASK);
 
 	W1_PUTC('K');
 	if ( last_res == W1_OK )
@@ -83,7 +55,7 @@ static inline void ds18b20_skip_rom(void)
 */
 static inline s8_t dsb1820_is_busy(void)
 {
-	return (w1_read(DS18B20_PIN) == 0);
+	return (w1_readbit(DS18B20_MASK) == 0);
 }
 
 /* dsb1820_read_scratchpad() - read the entire contents of the scratchpad into the buffer
@@ -99,7 +71,7 @@ void dsb1820_read_scratchpad(void)
 
 	for ( s8_t i = 0; i < DS18B20_SP_LEN ; i++ )
 	{
-		ds18b20_buffer[i] = w1_readbyte(DS18B20_PIN);
+		ds18b20_buffer[i] = w1_readbyte(DS18B20_MASK);
 	}
 }
 

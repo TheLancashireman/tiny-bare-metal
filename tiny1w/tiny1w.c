@@ -19,15 +19,6 @@
 */
 #include "tiny1w.h"
 
-#define DELAYus(us) \
-do {								\
-	u8_t t = (us+1)/3;				\
-	for ( ; t > 0 ; t-- )			\
-	{								\
-		asm("nop");					\
-	}								\
-} while (0)
-
 /* w1_busreset() - resets the 1-wire bus
  *
  * Entry conditions
@@ -46,16 +37,12 @@ s8_t w1_busreset(u8_t d_mask)
 	/* Set pin to output/low for 480 us
 	*/
 	DDRB = d_low;
-	DELAYus(480);
+	W1_DELAYus(480);
 	DDRB = d_high;
 
 	/* Wait 5 us.
 	*/
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
+	W1_DELAYus(5);
 
 	/* Sample the input until it goes low. Input should be low from 60..120 if device is present.
 	*/
@@ -78,8 +65,9 @@ s8_t w1_busreset(u8_t d_mask)
 		if ( ++t > 60 )
 			return W1_RST_NOTGONE;
 	}
+	W1_DELAYus(120-t);
 #else
-	DELAYus(120);
+	W1_DELAYus(120);
 #endif
 
 	return W1_OK;
@@ -97,17 +85,18 @@ void w1_writebyte(u8_t d_mask, u8_t data)
 		if ( (data & 1) == 0 )
 		{
 			DDRB = d_low;		/* Output low for 65 us */
-			DELAYus(65);
+			W1_DELAYus(65);
 			DDRB = d_high;
-			DELAYus(55);
+			W1_DELAYus(55);
 		}
 		else
 		{
 			DDRB = d_low;		/* Output low for 1 us */
-			asm("nop");
+			W1_DELAYus(1);
 			DDRB = d_high;
-			DELAYus(120);
+			W1_DELAYus(120);
 		}
+		data = data >> 1;
 	}
 }
 
@@ -124,15 +113,16 @@ u8_t w1_readbyte(u8_t d_mask)
 	for ( u8_t i = 0; i < 8; i++ )
 	{
 		DDRB = d_low;		/* Output low for 1 us */
-		asm("nop");
+		W1_DELAYus(1);
 		DDRB = d_high;
 
-		DELAYus(15);
+		W1_DELAYus(15);
 		v = v >> 1;
 		if ( (PINB & d_mask) != 0 )
 		{
 			v = v | 0x80;
 		}
+		W1_DELAYus(45);
 	}
 	return v;
 }

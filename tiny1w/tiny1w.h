@@ -80,47 +80,50 @@
 #define W1_TPDIH			60
 #define W1_TPDLOW			240
 
-static inline void w1_delay(u16_t us)
-{
-	if ( us > 20 )
-	{
-		delay_us(us);
-	}
-	else
-	{
-		u16_t loops = us;
-		while ( loops > 0 )
-		{
-			loops--;
-			asm("nop");
-		}
-	}
-}
+#if HZ==1000000
 
-/* w1_read() - read a bit from the 1-wire bus
+/* W1_DELAYus() - delay for x us (calibrated for 1 MHz clock)
+ *
+ * The delay loop is calibrated assuming each iteration is 3 instructions == 3 us.
+ * The loop always under-estimates; it is assumed that the extra us or two is provided
+ * by nearby instructions.
 */
-static inline u8_t w1_read(u8_t pin)
+#define W1_DELAYus(us) \
+do {								\
+	u8_t tx = ((us))/3;				\
+	for ( ; tx > 0 ; tx-- )			\
+	{								\
+		asm("nop");					\
+	}								\
+} while (0)
+
+#else
+#error "Delay function for other CPU frequencies to be implemented"
+#endif
+
+/* w1_readbit() - read a bit from the 1-wire bus
+*/
+static inline u8_t w1_readbit(u8_t d_mask)
 {
-    /* Force output pin to low for 1us
-    */
-    pin_mode(pin, OUTPUT);
-    w1_delay(1);
-    pin_mode(pin, INPUT);
+	u8_t d_high = DDRB;
+	u8_t d_low = d_high | d_mask;
+	u8_t d = 0;
 
-	/* After max. 15 us, sample bus
-	*/
-    w1_delay(5);
-	u8_t x = pin_get(pin);
+	DDRB = d_low;		/* Output low for 1 us */
+	W1_DELAYus(1);
+	DDRB = d_high;
 
-	/* Delay rest of read slot + recovery time
-	*/
-	w1_delay(55);
-
-	return x != 0;
+	W1_DELAYus(15);
+	if ( (PINB & d_mask) != 0 )
+	{
+		d = 1;
+	}
+	W1_DELAYus(45);
+	return d;
 }
 
-extern s8_t w1_reset(u8_t pin);
-extern void w1_write_byte(u8_t pin, u8_t b);
-extern u8_t w1_readbyte(u8_t pin);
+extern s8_t w1_busreset(u8_t d_mask);
+extern void w1_writebyte(u8_t d_mask, u8_t data);
+extern u8_t w1_readbyte(u8_t d_mask);
 
 #endif

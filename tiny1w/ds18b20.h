@@ -33,8 +33,8 @@
 /* DS18B20 function codes
 */
 #define DS18B20_FN_CONVERT	0x44
-#define DS18B20_FN_READ_SP	0x4e
-#define DS18B20_FN_WRITE_SP	0xbe
+#define DS18B20_FN_READ_SP	0xbe
+#define DS18B20_FN_WRITE_SP	0x4e
 #define DS18B20_FN_COPY_SP	0x48
 #define DS18B20_FN_RECALL_E	0xb8
 #define DS18B20_FN_READ_POW	0xb4
@@ -53,9 +53,11 @@
 #define DS18B20_PIN				PB3
 #endif
 
+#define DS18B20_MASK			(1 << DS18B20_PIN)
+
 static inline void ds18b20_send_command(u8_t cmd)
 {
-	w1_write_byte(DS18B20_PIN, cmd);
+	w1_writebyte(DS18B20_MASK, cmd);
 }
 
 extern u16_t ds18b20_read_temp(void);
