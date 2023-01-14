@@ -52,15 +52,24 @@ s8_t w1_reset(u8_t pin)
 	W1_PUTC('e');
 	pin_mode(pin, INPUT);
 
-	/* Wait 80 us then sample the input. Input should be low from 60..120 if device is present.
+	/* Wait 2 us then sample the input until it goes low. Input should be low from 60..120 if device is present.
 	*/
 	W1_PUTC('f');
-	w1_delay(80);
+	w1_delay(2);
 
 #if W1_PRESENCE
-	if ( pin_get(pin) )
-		return W1_RST_NOTPRESENT;
+	for ( s8_t i = 0; i < 60; i++ )
+	{
+		w1_delay(1);
+		if ( !pin_get(pin) )
+			break;
+	}
+#else
+	w1_delay(120);
 #endif
+
+	if ( !pin_get(pin) )
+		return W1_RST_NOTPRESENT;
 
 	W1_PUTC('g');
 	/* Wait until pin goes high again (longer than max: error)

@@ -82,16 +82,19 @@
 
 static inline void w1_delay(u16_t us)
 {
-#if 1
-	delay_us(us);
-#else
-	u16_t loops = us/10;
-	while ( loops > 0 )
+	if ( us > 20 )
 	{
-		loops--;
-		asm(";");
+		delay_us(us);
 	}
-#endif
+	else
+	{
+		u16_t loops = us;
+		while ( loops > 0 )
+		{
+			loops--;
+			asm("nop");
+		}
+	}
 }
 
 /* w1_read() - read a bit from the 1-wire bus
