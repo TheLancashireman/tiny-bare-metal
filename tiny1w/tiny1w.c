@@ -1,4 +1,4 @@
-/* tiny1w.c - 1-wire protocol
+/* tiny1w-optimized.c - 1-wire protocol
  *
  * (c) David Haworth
  *
@@ -19,144 +19,120 @@
 */
 #include "tiny1w.h"
 
-/* w1_reset() - resets the 1-wire bus
+#define DELAYus(us) \
+do {								\
+	u8_t t = (us+1)/3;				\
+	for ( ; t > 0 ; t-- )			\
+	{								\
+		asm("nop");					\
+	}								\
+} while (0)
+
+/* w1_busreset() - resets the 1-wire bus
+ *
+ * Entry conditions
+ *	- pin is INPUT/LOW
+ *	- bus is idle
+ *
+ * Parameters:
+ *	d_mask = mask value for the 1-wire pin
 */
-s8_t w1_reset(u8_t pin)
+s8_t w1_busreset(u8_t d_mask)
 {
-	W1_PUTC('a');
-	/* Set pin to low/input
-	*/
-	pin_set(pin, LOW);
-	pin_mode(pin, INPUT);
+	u8_t d_high = DDRB;
+	u8_t d_low = d_high | d_mask;
+	u8_t t;
 
-	/* Ensure pin is high, i.e. no slaves occupying the bus.
-	 * Wait longer than max --> error
+	/* Set pin to output/low for 480 us
 	*/
-	W1_PUTC('b');
-	for ( s16_t i = 0; i < W1_TRSTH; i++ )
-	{
-		w1_delay(1);
-		if ( pin_get(pin) )
-			break;
-	}
+	DDRB = d_low;
+	DELAYus(480);
+	DDRB = d_high;
 
-	W1_PUTC('c');
-	if ( !pin_get(pin) )
-		return W1_RST_NOTIDLE;
-	
-	/* Set pin to output - drives low - for 480 us
+	/* Wait 5 us.
 	*/
-	W1_PUTC('d');
-	pin_mode(pin, OUTPUT);
-	w1_delay(480);
-	W1_PUTC('e');
-	pin_mode(pin, INPUT);
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
 
-	/* Wait 2 us then sample the input until it goes low. Input should be low from 60..120 if device is present.
+	/* Sample the input until it goes low. Input should be low from 60..120 if device is present.
 	*/
-	W1_PUTC('f');
-	w1_delay(2);
-
 #if W1_PRESENCE
-	for ( s8_t i = 0; i < 60; i++ )
+	t = 0;
+	for (;;)
 	{
-		w1_delay(1);
-		if ( !pin_get(pin) )
+		if ( (PINB & d_mask) == 0 )
 			break;
+		if ( ++t > 30 )
+			return W1_RST_NOTPRESENT;
 	}
-#else
-	w1_delay(120);
-#endif
 
-	if ( !pin_get(pin) )
-		return W1_RST_NOTPRESENT;
-
-	W1_PUTC('g');
 	/* Wait until pin goes high again (longer than max: error)
 	*/
-	for ( s16_t i = 0; i < 240; i++ )
+	for (;;)
 	{
-		w1_delay(1);
-		if ( pin_get(pin) )
+		if ( (PINB & d_mask) != 0 )
 			break;
+		if ( ++t > 60 )
+			return W1_RST_NOTGONE;
 	}
-
-	W1_PUTC('h');
-	if ( !pin_get(pin) )
-		return W1_RST_NOTGONE;
+#else
+	DELAYus(120);
+#endif
 
 	return W1_OK;
 }
 
-/* w1_write0() - write a '0' bit on the 1-wire bus
- *
- * Assumption: pin is LOW/INPUT on entry
- *
- * Slave samples line at time 15us < t < 60us after falling edge
- * ==> Master must hold low for at least 60 us ... max 120us
- * We choose 65us
+/* w1_writebyte() - write a byte to the 1-wire bus
 */
-static inline void w1_write0(u8_t pin)
+void w1_writebyte(u8_t d_mask, u8_t data)
 {
-	/* Force output pin to low for 60us < t < 120us
-	*/
-	pin_mode(pin, OUTPUT);
-	w1_delay(65);
+	u8_t d_high = DDRB;
+	u8_t d_low = d_high | d_mask;
 
-	/* Back to high-impedance for 1 us
-	*/
-	pin_mode(pin, INPUT);
-	w1_delay(1);
-}
-
-/* w1_write1() - write a '1' bit on the 1-wire bus
- *
- * Assumption: pin is LOW/INPUT on entry
- *
- * Slave samples line at time 15us < t < 60us after falling edge
- * ==> Master releases after 1us, must allow 60 us
- * We choose 65 us
-*/
-static inline void w1_write1(u8_t pin)
-{
-	/* Force output pin to low for 1us
-	*/
-	pin_mode(pin, OUTPUT);
-	w1_delay(1);
-
-	/* Back to high-impedance for 65 us
-	*/
-	pin_mode(pin, INPUT);
-	w1_delay(65);
-}
-
-/* w1_write_byte() - write a byte to the 1-wire bus
-*/
-void w1_write_byte(u8_t pin, u8_t b)
-{
-	s8_t i;
-	for ( i = 0; i < 8; i++ )
+	for ( u8_t i = 0; i < 8; i++ )
 	{
-		if ( (b & 0x01) == 0 )
-			w1_write0(pin);
+		if ( (data & 1) == 0 )
+		{
+			DDRB = d_low;		/* Output low for 65 us */
+			DELAYus(65);
+			DDRB = d_high;
+			DELAYus(55);
+		}
 		else
-			w1_write1(pin);
-		b = b >> 1;
+		{
+			DDRB = d_low;		/* Output low for 1 us */
+			asm("nop");
+			DDRB = d_high;
+			DELAYus(120);
+		}
 	}
 }
 
 /* w1_readbyte() - read a byte from the onw-wire bus
 */
-u8_t w1_readbyte(u8_t pin)
+u8_t w1_readbyte(u8_t d_mask)
 {
+	u8_t d_high = DDRB;
+	u8_t d_low = d_high | d_mask;
+	u8_t v = 0;
+
 	/* LSB first
 	*/
-	u8_t v = 0;
 	for ( u8_t i = 0; i < 8; i++ )
 	{
+		DDRB = d_low;		/* Output low for 1 us */
+		asm("nop");
+		DDRB = d_high;
+
+		DELAYus(15);
 		v = v >> 1;
-		if ( w1_read(pin) != 0 )
+		if ( (PINB & d_mask) != 0 )
+		{
 			v = v | 0x80;
+		}
 	}
 	return v;
 }
