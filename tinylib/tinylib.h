@@ -32,6 +32,17 @@
 #define PASSIVE_TIME	0
 #endif
 
+// Assume interrupt locking needed unless told otherwise
+// When ALL_ATTINY == 0, it's assumed that only port B exists
+#ifndef INT_LOCK
+#define INT_LOCK		1
+#endif
+
+// Assume only attinyx5 unless told otherwise
+#ifndef ALL_ATTINY
+#define ALL_ATTINY	0
+#endif
+
 // Timer0 clock and resolution
 #if HZ == 16000000
 #define T0_CLKSEL			0x03	// Prescaler 64 --> 250 kHz
@@ -80,10 +91,68 @@ extern volatile u32_t time_high;
 extern volatile u32_t time_low;
 #endif
 
-extern void pin_mode_m(u8_t bitmask, u8_t mode);
-extern void pin_set_m(u8_t bitmask, u8_t bitstate);
-extern u8_t disable(void);
-extern u8_t restore(u8_t old);
+/* ===============================
+ * Interrupt locking and unlocking
+ * ===============================
+*/
+/* enable() - enable interrupts unconditionally
+*/
+static inline void enable(void)
+{
+	__asm__ __volatile__ ("sei");
+}
+
+/* disable() - disable interrupts using the cli instruction
+ *
+ * Returns the previous state of the status register (SREG)
+*/
+static inline u8_t disable(void)
+{
+	u8_t s = SREG;
+	__asm__ __volatile__ ("cli");
+	return s;
+}
+
+/* restore() - set the interrupt flag to a given state - usually the previous state returned by disable()
+ *
+ * Returns the state of the status register (SREG) prior to the restore
+*/
+static inline u8_t restore(u8_t old)
+{
+	u8_t s = SREG;
+	if ( old & 0x80)
+	{
+		__asm__ __volatile__ ("sei");
+	}
+	else
+	{
+		__asm__ __volatile__ ("cli");
+	}
+	return s;
+}
+
+/* ==================================================
+ * Interrupt locking and unlocking only when required
+ * ==================================================
+*/
+#if INT_LOCK
+static inline u8_t TL_disable(void)
+{
+	return disable();
+}
+static inline void TL_restore(u8_t s)
+{
+	(void)restore(s);
+}
+#else
+static inline u8_t TL_disable(void)
+{
+}
+static inline void TL_restore(u8_t s)
+{
+}
+#endif
+
 extern void timing_init(void);
 extern void delay_ticks(u32_t ticks);
 extern u8_t reverse_bits(u8_t b);
@@ -95,32 +164,91 @@ extern u64_t read_time(void);
 #endif
 #endif
 
-/* pin_mode() - set the mode of a pin passed as a pin number
+/* ATtinyx5 MCUs only have PORTB
+ * These macros are provided for backwards compatibility
 */
-static inline void pin_mode(u8_t pin, u8_t mode)
+#define pin_mode(pin, mode)		port_pin_mode('B', pin, mode)
+#define pin_set(pin, state)		port_pin_set('B', pin, state)
+#define pin_get(pin)			port_pin_get('B', pin)
+
+/* port_pin_mode() - set the mode of a port/pin passed as letter/number
+*/
+static inline void port_pin_mode(char port, u8_t pin, u8_t mode)
 {
-	pin_mode_m(0x1<<pin, mode);
+	u8_t mask = (1 << pin);
+	u8_t s = TL_disable();
+#ifdef PORTA
+	if ( port == 'A' )
+	{
+		if ( mode == OUTPUT )
+			DDRA |= mask;
+		else
+			DDRA &= ~mask;
+		if ( mode == PULLUP )
+			PORTA |= mask;
+		else
+			PORTA &= ~mask;
+	}
+#endif
+#ifdef PORTB
+	if ( port == 'B' )
+	{
+		if ( mode == OUTPUT )
+			DDRB |= mask;
+		else
+			DDRB &= ~mask;
+		if ( mode == PULLUP )
+			PORTB |= mask;
+		else
+			PORTB &= ~mask;
+	}
+#endif
+	TL_restore(s);
 }
 
-/* pin_set() - set the state of a pin passed as a pin number
+/* port_pin_set() - set the state of a port/pin passed as a letter/number
 */
-static inline void pin_set(u8_t pin, u8_t hilo)
+static inline void port_pin_set(char port, u8_t pin, u8_t state)
 {
-	pin_set_m(0x1<<pin, (hilo?(0x1<<pin):0x0));
+	u8_t mask = (1 << pin);
+	u8_t s = TL_disable();
+#ifdef PORTA
+	if ( port == 'A' )
+	{
+		if ( state)
+			PORTA = (PORTA  | mask);
+		else
+			PORTA = (PORTA & ~mask);
+	}
+#endif
+#ifdef PORTB
+	if ( port == 'B' )
+	{
+		if ( state)
+			PORTB = (PORTB  | mask);
+		else
+			PORTB = (PORTB & ~mask);
+	}
+#endif
+	TL_restore(s);
 }
 
-/* pin_get() - get the state of a pin passed as a pin number
+/* port_pin_get() - get the state of a port/pin passed as a letter/number
 */
-static inline u8_t pin_get(u8_t pin)
+static inline u8_t port_pin_get(char port, u8_t pin)
 {
-	return (PINB & (0x1<<pin)) != 0x0;
-}
-
-/* enable() - enable interrupts
-*/
-static inline void enable(void)
-{
-	__asm__ __volatile__ ("sei");
+#ifdef PORTA
+	if ( port == 'A' )
+	{
+		return (PINA & (0x1<<pin)) != 0x0;
+	}
+#endif
+#ifdef PORTB
+	if ( port == 'B' )
+	{
+		return (PINB & (0x1<<pin)) != 0x0;
+	}
+#endif
 }
 
 /* delay_ms() - delay for a number of milliseconds

@@ -25,9 +25,9 @@
 #	GAR			- the name of the GNU archiver program (including full path if necessary)
 #				- a rule to compile a .c file to a .o file
 
-TINYL_OBJS	+=	$(OBJ_DIR)/pin-mode.o
-TINYL_OBJS	+=	$(OBJ_DIR)/pin-set.o
-TINYL_OBJS	+=	$(OBJ_DIR)/disable-restore.o
+#TINYL_OBJS	+=	$(OBJ_DIR)/pin-mode.o
+#TINYL_OBJS	+=	$(OBJ_DIR)/pin-set.o
+#TINYL_OBJS	+=	$(OBJ_DIR)/disable-restore.o
 TINYL_OBJS	+=	$(OBJ_DIR)/timing.o
 TINYL_OBJS	+=	$(OBJ_DIR)/read-time.o
 TINYL_OBJS	+=	$(OBJ_DIR)/read-time-32.o

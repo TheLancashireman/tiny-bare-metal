@@ -26,32 +26,32 @@ u8_t restore(u8_t old)
 
 ### GPIO
 ```
-void pin_mode(u8_t pin, u8_t mode)
+void port_pin_mode(char port, u8_t pin, u8_t mode)
 ```
 > Sets the mode (OUTPUT/INPUT/PULLUP) of the pin.<br/>
-> The pin is specified by number (0..5 or PB0..PB5)
+> The port is specified by an uppercase letter ('A', 'B', ...)
+> The pin is specified by number (0..7 or Px0..Px7)
 ```
-void pin_set(u8_t pin, u8_t hilo)
+void port_pin_set(char port, u8_t pin, u8_t state)
 ```
 > Sets the output state of the pin.<br/>
-> The pin is specified by number (0..5 or PB0..PB5)
+> The port is specified by an uppercase letter ('A', 'B', ...)
+> The pin is specified by number (0..7 or Px0..Px7)
 ```
-u8_t pin_get(u8_t pin)
+u8_t port_pin_get(char port, u8_t pin)
 ```
 > Gets the current state of the pin.<br/>
-> The pin is specified by number (0..5 or PB0..PB5)
+> The port is specified by an uppercase letter ('A', 'B', ...)
+> The pin is specified by number (0..7 or Px0..Px7)
 ```
-void pin_mode_m(u8_t bitmask, u8_t mode);
+
+For backwards compatibility, the following macros are defined for PORTB only:
 ```
-> Used by pin_mode().<br/>
-> Sets the mode (OUTPUT/INPUT/PULLUP) of the pin.<br/>
-> The pin is specified by mask (1 << pin_no)
+void pin_mode(u8_t pin, u8_t mode)
+void pin_set(u8_t pin, u8_t state)
+u8_t pin_get(u8_t pin)
 ```
-void pin_set_m(u8_t bitmask, u8_t bitstate);
-```
-> Used by pin_set().<br/>
-> Sets the output state of the pin.<br/>
-> The pin is specified by mask (1 << pin_no). The state is either (1<<pin_no) or 0.
+
 
 ### Timing
 The time-measurement API can measure time down to a resolution of T0_RESOLUTION microseconds -
