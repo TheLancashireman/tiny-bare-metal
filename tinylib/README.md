@@ -43,7 +43,6 @@ u8_t port_pin_get(char port, u8_t pin)
 > Gets the current state of the pin.<br/>
 > The port is specified by an uppercase letter ('A', 'B', ...)
 > The pin is specified by number (0..7 or Px0..Px7)
-```
 
 For backwards compatibility, the following macros are defined for PORTB only:
 ```
@@ -51,7 +50,6 @@ void pin_mode(u8_t pin, u8_t mode)
 void pin_set(u8_t pin, u8_t state)
 u8_t pin_get(u8_t pin)
 ```
-
 
 ### Timing
 The time-measurement API can measure time down to a resolution of T0_RESOLUTION microseconds -
