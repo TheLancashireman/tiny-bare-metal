@@ -23,9 +23,9 @@
 */
 void spi_masterinit(void)
 {
-	pin_mode(PB2, OUTPUT);	/* SCK	*/
-	pin_mode(PB1, PULLUP);	/* MISO	*/
-	pin_mode(PB0, OUTPUT);	/* MOSI	*/
+	pin_mode(PB2, OUTPUT);	/* SCK			*/
+	pin_mode(PB1, OUTPUT);	/* DO (MOSI)	*/
+	pin_mode(PB0, PULLUP);	/* DI (MISO)	*/
 
 	USICR = TUSI_3WIRE | TUSI_SOFTCLK;
 }
@@ -35,8 +35,8 @@ void spi_masterinit(void)
 u8_t spi_writeread(u8_t data)
 {
 	USIDR = data;
-	u8_t clk0 = TUSI_3WIRE | TUSI_SOFTCLK | TUSI_TC;
-	u8_t clk1 = clk0 | TUSI_CLK;
+	const u8_t clk0 = TUSI_3WIRE | TUSI_SOFTCLK | TUSI_TC;
+	const u8_t clk1 = clk0 | TUSI_CLK;
 
 	USICR = clk0;	/* Bit 7 */
 	USICR = clk1;
