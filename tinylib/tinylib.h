@@ -203,6 +203,32 @@ static inline void port_pin_mode(char port, u8_t pin, u8_t mode)
 			PORTB &= ~mask;
 	}
 #endif
+#ifdef PORTC
+	if ( port == 'C' )
+	{
+		if ( mode == OUTPUT )
+			DDRC |= mask;
+		else
+			DDRC &= ~mask;
+		if ( mode == PULLUP )
+			PORTC |= mask;
+		else
+			PORTC &= ~mask;
+	}
+#endif
+#ifdef PORTD
+	if ( port == 'D' )
+	{
+		if ( mode == OUTPUT )
+			DDRD |= mask;
+		else
+			DDRD &= ~mask;
+		if ( mode == PULLUP )
+			PORTD |= mask;
+		else
+			PORTD &= ~mask;
+	}
+#endif
 	TL_restore(s);
 }
 
@@ -230,6 +256,24 @@ static inline void port_pin_set(char port, u8_t pin, u8_t state)
 			PORTB = (PORTB & ~mask);
 	}
 #endif
+#ifdef PORTC
+	if ( port == 'C' )
+	{
+		if ( state)
+			PORTC = (PORTC  | mask);
+		else
+			PORTC = (PORTC & ~mask);
+	}
+#endif
+#ifdef PORTD
+	if ( port == 'D' )
+	{
+		if ( state)
+			PORTD = (PORTD  | mask);
+		else
+			PORTD = (PORTD & ~mask);
+	}
+#endif
 	TL_restore(s);
 }
 
@@ -247,6 +291,18 @@ static inline u8_t port_pin_get(char port, u8_t pin)
 	if ( port == 'B' )
 	{
 		return (PINB & (0x1<<pin)) != 0x0;
+	}
+#endif
+#ifdef PORTC
+	if ( port == 'C' )
+	{
+		return (PINC & (0x1<<pin)) != 0x0;
+	}
+#endif
+#ifdef PORTD
+	if ( port == 'D' )
+	{
+		return (PIND & (0x1<<pin)) != 0x0;
 	}
 #endif
 }
