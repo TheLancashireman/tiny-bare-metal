@@ -40,14 +40,8 @@
 #endif
 
 // Assume interrupt locking needed unless told otherwise
-// When ALL_ATTINY == 0, it's assumed that only port B exists
 #ifndef INT_LOCK
 #define INT_LOCK		1
-#endif
-
-// Assume only attinyx5 unless told otherwise
-#ifndef ALL_ATTINY
-#define ALL_ATTINY	0
 #endif
 
 // Timer0 clock and resolution
