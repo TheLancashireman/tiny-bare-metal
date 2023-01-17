@@ -24,8 +24,16 @@
 
 #ifdef IR_RX_PIN
 
+/* ToDo: work out which pins can support IR. Perhaps it's just a matter
+ * of generating the correct ISR for the PCINTx that's chosen
+ * The current implementation only works for PCINT0 on an 8-pin device (ATtinyx5)
+*/
 #if IR_RX_PIN != 0
 #error "Wrong pin"
+#endif
+
+#ifdef PORTA
+#error "Needs work for use on a multi-port device."
 #endif
 
 struct ir_s ir;

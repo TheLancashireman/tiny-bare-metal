@@ -47,4 +47,38 @@
 #define TUSI_EXTRISE	( (1 << USICS1) | (0 << USICS0) )
 #define TUSI_EXTFALL	( (1 << USICS1) | (1 << USICS0) )
 
+/* Pin assignments for various MCUs
+ * The assignments can be overridden on the command line
+*/
+#ifndef USI_CLK_PORT
+
+#if defined(PORTC) || defined(PORTD)
+#error "Needs adapting for bigger devices"
+
+#elif defined PORTA
+
+/* Dual-port devices, e.g. ATtiny44
+*/
+#define USI_CLK_PORT	'A'
+#define USI_CLK_PIN		PA4
+#define USI_DO_PORT		'A'
+#define USI_DO_PIN		PA5	
+#define USI_DI_PORT		'A'
+#define USI_DI_PIN		PA6
+
+#else
+
+/* Single-port devices, e.g. ATtiny85
+*/
+#define USI_CLK_PORT	'B'
+#define USI_CLK_PIN		PB2
+#define USI_DO_PORT		'B'
+#define USI_DO_PIN		PB1	
+#define USI_DI_PORT		'B'
+#define USI_DI_PIN		PB0
+
+#endif
+
+#endif
+
 #endif

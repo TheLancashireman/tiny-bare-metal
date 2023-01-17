@@ -23,9 +23,9 @@
 */
 void spi_masterinit(void)
 {
-	pin_mode(PB2, OUTPUT);	/* SCK			*/
-	pin_mode(PB1, OUTPUT);	/* DO (MOSI)	*/
-	pin_mode(PB0, PULLUP);	/* DI (MISO)	*/
+	port_pin_mode(USI_CLK_PORT, USI_CLK_PIN, OUTPUT);
+	port_pin_mode(USI_DO_PORT, USI_DO_PIN, OUTPUT);
+	port_pin_mode(USI_DI_PORT, USI_DI_PIN, PULLUP);
 
 	USICR = TUSI_3WIRE | TUSI_SOFTCLK;
 }
