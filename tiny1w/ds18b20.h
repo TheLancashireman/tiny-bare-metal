@@ -43,9 +43,18 @@
 */
 #define DS18B20_INVALID_TEMP	0x8000
 
-/* Length of the scratchpad (including CRC)
+/* Length of the scratchpad (including CRC), and offsets
 */
 #define DS18B20_SP_LEN			9
+#define DS18B20_SP_TEMP_LSB		0
+#define DS18B20_SP_TEMP_MSB		1
+#define DS18B20_SP_TH			2		/* Upper alarm threshold */
+#define DS18B20_SP_TL			3		/* Lower alarm threshold */
+#define DS18B20_SP_CFG			4
+#define DS18B20_SP_RES_FF		5
+#define DS18B20_SP_RES			6
+#define DS18B20_SP_RES_10		7
+#define DS18B20_SP_CRC			8
 
 /* Default value of MCU pin
 */
@@ -55,11 +64,40 @@
 
 #define DS18B20_MASK			(1 << DS18B20_PIN)
 
+extern u8_t ds18b20_buffer[DS18B20_SP_LEN];
+extern s8_t last_res;
+
+/* ds18b20_send_command() - send a command to the DS18B20
+*/
 static inline void ds18b20_send_command(u8_t cmd)
 {
 	w1_writebyte(DS18B20_MASK, cmd);
 }
 
+/* dsb1820_is_busy() - check if device is busy after a long-duration command
+*/
+static inline s8_t dsb1820_is_busy(void)
+{
+	return (w1_readbit(DS18B20_MASK) == 0);
+}
+
+/* ds18b20_get_temp() - get the temperature from the scratchpad buffer
+*/
+static inline u16_t ds18b20_get_temp(void)
+{
+	return ds18b20_buffer[DS18B20_SP_TEMP_LSB] + ds18b20_buffer[DS18B20_SP_TEMP_MSB] * 256;
+}
+
+/* ds18b20_invalid_temp() - return an invalid temperature incorporating the error code
+*/
+static inline u16_t ds18b20_invalid_temp(void)
+{
+	return DS18B20_INVALID_TEMP + last_res;
+}
+
 extern u16_t ds18b20_read_temp(void);
+extern void ds18b20_read_scratchpad(void);
+extern s8_t dsb18b20_crc_ok(void);
+extern void ds18b20_start_conversion(void);
 
 #endif

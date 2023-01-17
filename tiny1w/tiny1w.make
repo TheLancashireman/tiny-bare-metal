@@ -23,4 +23,5 @@
 #		- see tinylib.make. This makefile adds files to tinylib.a
 
 TINYL_OBJS	+=	$(OBJ_DIR)/tiny1w.o
+TINYL_OBJS	+=	$(OBJ_DIR)/ds18b20.o
 TINYL_OBJS	+=	$(OBJ_DIR)/ds18b20-read-temp.o
