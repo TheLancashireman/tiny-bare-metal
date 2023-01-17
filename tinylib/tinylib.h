@@ -22,6 +22,13 @@
 
 #include <avr/io.h>
 
+/* If a configuration header is defined, include it.
+ * This saves having a long command line and possibly awkward options
+*/
+#ifdef TINYLIB_CFG_HDR
+#include TINYLIB_CFG_HDR
+#endif
+
 // Assume full speed unless told otherwise.
 #ifndef HZ
 #define HZ	16000000
