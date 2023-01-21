@@ -52,13 +52,7 @@ extern int bgetc(void);
 
 #if ASYNC_BITRATE > 0
 
-#if ASYNC_BITRATE == 9600
-#define BIT_TIME	(104/T0_RESOLUTION)
-#elif ASYNC_BITRATE == 4800
-#define BIT_TIME	(208/T0_RESOLUTION)
-#else
-#error "Unsupported bit rate"
-#endif
+#define BIT_TIME	((HZ/T0_PRESCALE)/ASYNC_BITRATE)
 
 extern void putc(char c);
 extern int puts(const char s[]);
