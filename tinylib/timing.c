@@ -34,9 +34,9 @@ volatile u32_t time_low;
 */
 void timing_init(void)
 {
-	u8_t s = disable();
+	u8_t s = TL_disable();
 	TCCR0A = 0x00;						// Clear all output-compare modes
-	TCCR0B = T0_CLKSEL;					// Select CLKIO/64 as clock source
+	TCCR0B = T0_CLKSEL;					// Select clock source
 	TCNT0 = 0x00;						// Clear the counter
 	OCR0A = 0x00;						// Clear both output-compare registers
 	OCR0B = 0x00;
@@ -46,7 +46,7 @@ void timing_init(void)
 #ifdef TIFR
 	TIFR = 0x1a;						// Clear all pending interrupts for Timer0
 #endif
-	(void)restore(s);
+	(void)TL_restore(s);
 }
 
 /* Timer0 overflow interrupt
@@ -56,9 +56,11 @@ void timing_init(void)
 */
 ISR(TIM0_OVF_vect)
 {
+#if !PASSIVE_TIME
 #if TIME64
 	if ( time_low >= 0xffffff00 )
 		time_high++;
 #endif
 	time_low += 0x100;
+#endif
 }
