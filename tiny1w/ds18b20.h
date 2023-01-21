@@ -71,14 +71,14 @@ extern s8_t last_res;
 */
 static inline void ds18b20_send_command(u8_t cmd)
 {
-	w1_writebyte(DS18B20_MASK, cmd);
+	t1w_writebyte(DS18B20_MASK, cmd);
 }
 
 /* dsb1820_is_busy() - check if device is busy after a long-duration command
 */
 static inline s8_t dsb1820_is_busy(void)
 {
-	return (w1_readbit(DS18B20_MASK) == 0);
+	return (t1w_readbit(DS18B20_MASK) == 0);
 }
 
 /* ds18b20_get_temp() - get the temperature from the scratchpad buffer

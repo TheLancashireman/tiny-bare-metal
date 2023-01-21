@@ -34,9 +34,9 @@ s8_t last_res;
 */
 static inline void ds18b20_skip_rom(void)
 {
-	last_res = w1_busreset(DS18B20_MASK);
+	last_res = t1w_busreset(DS18B20_MASK);
 
-	if ( last_res == W1_OK )
+	if ( last_res == T1W_OK )
 	{
 		ds18b20_send_command(DS18B20_ROM_SKIP);
 	}
@@ -48,14 +48,14 @@ void ds18b20_read_scratchpad(void)
 {
 	ds18b20_skip_rom();
 
-	if ( last_res != W1_OK )
+	if ( last_res != T1W_OK )
 		return;
 
 	ds18b20_send_command(DS18B20_FN_READ_SP);
 
 	for ( s8_t i = 0; i < DS18B20_SP_LEN ; i++ )
 	{
-		ds18b20_buffer[i] = w1_readbyte(DS18B20_MASK);
+		ds18b20_buffer[i] = t1w_readbyte(DS18B20_MASK);
 	}
 }
 
@@ -72,7 +72,7 @@ void ds18b20_start_conversion(void)
 {
 	ds18b20_skip_rom();
 
-	if ( last_res != W1_OK )
+	if ( last_res != T1W_OK )
 		return;
 
 	ds18b20_send_command(DS18B20_FN_CONVERT);

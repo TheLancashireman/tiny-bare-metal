@@ -25,7 +25,7 @@ u16_t ds18b20_read_temp(void)
 {
 	ds18b20_start_conversion();
 
-	if ( last_res != W1_OK )
+	if ( last_res != T1W_OK )
 		return ds18b20_invalid_temp();
 
 	do {
@@ -34,7 +34,7 @@ u16_t ds18b20_read_temp(void)
 
 	ds18b20_read_scratchpad();
 
-	if ( last_res != W1_OK )
+	if ( last_res != T1W_OK )
 		return ds18b20_invalid_temp();
 
 	if ( !dsb18b20_crc_ok() )
