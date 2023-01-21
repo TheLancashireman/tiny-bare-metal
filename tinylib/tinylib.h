@@ -47,12 +47,19 @@
 // Timer0 clock and resolution
 #if HZ == 16000000
 #define T0_CLKSEL			0x03	// Prescaler 64 --> 250 kHz
+#define T0_PRESCALE			64
 #define T0_RESOLUTION		4		// One tick = 4 us
 #elif HZ == 8000000
 #define T0_CLKSEL			0x03	// Prescaler 64 --> 125 kHz
+#define T0_PRESCALE			64
 #define T0_RESOLUTION		8		// One tick = 8 us
+#elif HZ == 1200000
+#define T0_CLKSEL			0x02	// Prescaler 8 --> 150 kHz
+#define T0_PRESCALE			8
+#define T0_RESOLUTION		6.666	// One tick = 6.666 us
 #elif HZ == 1000000
 #define T0_CLKSEL			0x02	// Prescaler 8 --> 125 kHz
+#define T0_PRESCALE			8
 #define T0_RESOLUTION		8		// One tick = 8 us
 #else
 #error "Unsupported HZ value"
@@ -148,6 +155,7 @@ static inline void TL_restore(u8_t s)
 #else
 static inline u8_t TL_disable(void)
 {
+	return 0;
 }
 static inline void TL_restore(u8_t s)
 {
