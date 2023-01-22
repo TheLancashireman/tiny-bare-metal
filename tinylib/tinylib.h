@@ -165,6 +165,7 @@ static inline void TL_restore(u8_t s)
 extern void timing_init(void);
 extern void delay_ticks(u32_t ticks);
 extern u8_t reverse_bits(u8_t b);
+extern u8_t read_eeprom(u8_t addr);
 
 #if !PASSIVE_TIME
 extern u32_t read_time_32(void);
