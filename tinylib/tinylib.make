@@ -29,6 +29,7 @@
 #TINYL_OBJS	+=	$(OBJ_DIR)/pin-set.o
 #TINYL_OBJS	+=	$(OBJ_DIR)/disable-restore.o
 TINYL_OBJS	+=	$(OBJ_DIR)/timing.o
+TINYL_OBJS	+=	$(OBJ_DIR)/sleep.o
 TINYL_OBJS	+=	$(OBJ_DIR)/read-time.o
 TINYL_OBJS	+=	$(OBJ_DIR)/read-time-32.o
 TINYL_OBJS	+=	$(OBJ_DIR)/delay-ticks.o
