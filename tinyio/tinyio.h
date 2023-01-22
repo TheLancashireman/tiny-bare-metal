@@ -49,7 +49,6 @@ extern int bgetc(void);
 
 #endif
 
-
 #if ASYNC_BITRATE > 0
 
 #define BIT_TIME	((HZ/T0_PRESCALE)/ASYNC_BITRATE)
@@ -75,5 +74,17 @@ static inline void async_init(void)
 }
 
 #endif
+
+/* tohex() - convert a nibble to a single ASCII-hex character
+*/
+static inline u8_t tohex(u8_t h)
+{
+	h = (h & 0x0f);
+	if ( h > 9)
+		return (h - 10 + 'A');
+	else
+		return (h + '0');
+}
+
 
 #endif
