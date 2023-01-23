@@ -49,18 +49,22 @@
 #define T0_CLKSEL			0x03	// Prescaler 64 --> 250 kHz
 #define T0_PRESCALE			64
 #define T0_RESOLUTION		4		// One tick = 4 us
+#define INTERVALS_PER_SEC	61		// No of sleep intervals per second = HZ/(1024*256) rounded
 #elif HZ == 8000000
 #define T0_CLKSEL			0x03	// Prescaler 64 --> 125 kHz
 #define T0_PRESCALE			64
 #define T0_RESOLUTION		8		// One tick = 8 us
+#define INTERVALS_PER_SEC	31		// No of sleep intervals per second = HZ/(1024*256) rounded
 #elif HZ == 1200000
 #define T0_CLKSEL			0x02	// Prescaler 8 --> 150 kHz
 #define T0_PRESCALE			8
 #define T0_RESOLUTION		6.666	// One tick = 6.666 us
+#define INTERVALS_PER_SEC	5		// No of sleep intervals per second = HZ/(1024*256) rounded
 #elif HZ == 1000000
 #define T0_CLKSEL			0x02	// Prescaler 8 --> 125 kHz
 #define T0_PRESCALE			8
 #define T0_RESOLUTION		8		// One tick = 8 us
+#define INTERVALS_PER_SEC	4		// No of sleep intervals per second = HZ/(1024*256) rounded
 #else
 #error "Unsupported HZ value"
 #endif
