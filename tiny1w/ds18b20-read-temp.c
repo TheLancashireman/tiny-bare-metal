@@ -29,7 +29,8 @@ u16_t ds18b20_read_temp(void)
 		return ds18b20_invalid_temp();
 
 	do {
-		/* ToDo: low-power sleep; time limit */
+		/* ToDo: time limit */
+		sleep(1);
 	} while ( dsb1820_is_busy() );
 
 	ds18b20_read_scratchpad();
