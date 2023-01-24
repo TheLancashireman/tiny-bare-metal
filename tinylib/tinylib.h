@@ -69,6 +69,21 @@
 #error "Unsupported HZ value"
 #endif
 
+/* WDP3..0 values for wdpsleep.
+ *
+ * Time values are approximate
+*/
+#define WDSLEEP_16ms	0x00
+#define WDSLEEP_32ms	0x01
+#define WDSLEEP_64ms	0x02
+#define WDSLEEP_128ms	0x03	// 0.125s
+#define WDSLEEP_256ms	0x04	// 0.25s
+#define WDSLEEP_512ms	0x05	// 0.5s
+#define WDSLEEP_1s		0x06
+#define WDSLEEP_2s		0x07
+#define WDSLEEP_4s		0x20
+#define WDSLEEP_8s		0x21
+
 #define ms_to_ticks(ms)		(((u32_t)(ms) * 1000)/T0_RESOLUTION)
 #define us_to_ticks(us)		(((u32_t)(us) + T0_RESOLUTION  - 1)/T0_RESOLUTION)
 
@@ -169,6 +184,8 @@ static inline void TL_restore(u8_t s)
 extern void timing_init(void);
 extern void delay_ticks(u32_t ticks);
 extern void sleep(u8_t n_intervals);
+extern void wdpsleep(u8_t wdp_val);
+extern void wdsleep(u8_t secs);
 extern u8_t reverse_bits(u8_t b);
 extern u8_t read_eeprom(u8_t addr);
 

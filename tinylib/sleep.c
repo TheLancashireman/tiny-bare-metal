@@ -46,7 +46,7 @@ void sleep(u8_t n_intervals)
 	TIMSK0 = 0x02;		// Disable Timer0 output-compare interrupts; enable overflow interrupt
 	TIFR0 = 0x0e;		// Clear all pending interrupts for Timer0
 	GTCCR = 0x01;		// Start and reset the prescaler
-	MCUCR &= 0x18;		// Set sleep mode to idle
+	MCUCR &= ~0x18;		// Set sleep mode to idle
 	MCUCR |= 0x20;		// Enable sleep mode
 
 	enable();
