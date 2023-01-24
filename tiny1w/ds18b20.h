@@ -64,6 +64,10 @@
 
 #define DS18B20_MASK			(1 << DS18B20_PIN)
 
+/* Error codes
+*/
+#define DS18B20_CVT_TIMEOUT		(T1W_DEV_ERR + 0)	// Timeout in conversion wait loop
+
 extern u8_t ds18b20_buffer[DS18B20_SP_LEN];
 extern s8_t last_res;
 

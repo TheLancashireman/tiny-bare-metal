@@ -28,10 +28,17 @@ u16_t ds18b20_read_temp(void)
 	if ( last_res != T1W_OK )
 		return ds18b20_invalid_temp();
 
+	s8_t lim = 4;
 	do {
-		/* ToDo: time limit */
-		sleep(1);
-	} while ( dsb1820_is_busy() );
+		wdpsleep(WDSLEEP_256ms);
+		lim--;
+	} while ( dsb1820_is_busy() && ( lim > 0) );
+
+	if ( lim <= 0 )
+	{
+		last_res = DS18B20_CVT_TIMEOUT;
+		return ds18b20_invalid_temp();
+	}
 
 	ds18b20_read_scratchpad();
 

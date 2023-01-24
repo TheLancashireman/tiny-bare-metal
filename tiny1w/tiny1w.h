@@ -93,6 +93,7 @@
 #define T1W_RST_NOTPRESENT	1
 #define T1W_RST_NOTIDLE		2
 #define T1W_RST_NOTGONE		3
+#define T1W_DEV_ERR			8		// First device-specific error
 
 /* Timing - see data sheet
 */
