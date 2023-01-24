@@ -43,31 +43,15 @@ void wdpsleep(u8_t wdp_val)
 	WDTCR = 0x18;					// Prime WDTCR for writing (WDCE | WDE)
 	WDTCR = wdp_val | 0x50;			// WDCE=1, WDTIE=1, WDE=0 + wdp_val
 
-	/* Save the timer settings
-	*/
-	u8_t tccr0a = TCCR0A;
-	u8_t tccr0b = TCCR0B;
-	u8_t timsk0 = TIMSK0;
-
-	GTCCR = 0x81;		// Stop the TCNT0 prescaler
-
-	MCUCR &= ~0x18;		// Clear out sleep mode
-	MCUCR |= 0x30;		// Set sleep mode to "power down" and enable sleep mode
+	MCUCR = (MCUCR & ~0x18) | 0x30;	// Clear out previous sleep mode; set sleep mode to "power down" & enable.
 
 	asm("sei");
 	asm("sleep");		// Sleep till the watchdog times out
 	asm("cli");
 
 	MCUCR &= ~0x20;		// Disable sleep mode
-	WDTCR = 0x10;		// register enable, clear everything else (disables watchdog)
-
-	GTCCR = 0x01;		// Start and reset the TCNT0 prescaler
-
-	/* Restore Timer 0 settings
-	*/
-	TCCR0A = tccr0a;
-	TCCR0B = tccr0b;
-	TIMSK0 = timsk0;
+	WDTCR = 0x18;		// Prime WDTCR for writing (WDCE | WDE)
+	WDTCR = 0x10;		// Clear everything out
 }
 
 /* wdsleep() - sleep for up to 255 seconds using watchdog timer
