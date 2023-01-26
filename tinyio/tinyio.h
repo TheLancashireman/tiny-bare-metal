@@ -33,9 +33,18 @@
 #ifndef ASYNC_RX_PIN
 #define ASYNC_RX_PIN	-1
 #endif
+#ifndef ASYNC_TX_INVERT			// Invert the serial output, e.g. for multi-drop open collector
+#define ASYNC_TX_INVERT	0
+#endif
 
 #ifndef RBSIZE
 #define RBSIZE	0
+#endif
+
+#if ASYNC_TX_INVERT
+#define ASYNC_TX_BIT(x)		(!(x))
+#else
+#define ASYNC_TX_BIT(x)		(x)
 #endif
 
 #if RBSIZE > 0
@@ -66,7 +75,7 @@ static inline void async_init(void)
 {
 #if ASYNC_TX_PIN >= 0 && ASYNC_TX_PIN <= 7
 	port_pin_mode(ASYNC_TX_PORT, ASYNC_TX_PIN, OUTPUT);
-	port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN, 1);
+	port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN, ASYNC_TX_BIT(1));
 #endif
 #if ASYNC_RX_PIN >= 0 && ASYNC_RX_PIN <= 7
 	port_pin_mode(ASYNC_RX_PORT, ASYNC_RX_PIN, INPUT);

@@ -28,18 +28,19 @@ void async_tx(u8_t ch)
 	u8_t t, i = 8;
 	t = TCNT0;
 
-	port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN, 0);					// Start bit
+
+	port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN, ASYNC_TX_BIT(0));					// Start bit
 	t = bit_delay(t);
 
 	while ( i > 0 )
 	{
-		port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN,  ch & 0x01);		// Data bit
+		port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN,  ASYNC_TX_BIT(ch & 0x01));	// Data bit
 		ch = ch >> 1;
 		i--;
 		t = bit_delay(t);
 	}
 
-	port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN, 1);					// Stop bit
+	port_pin_set(ASYNC_TX_PORT, ASYNC_TX_PIN, ASYNC_TX_BIT(1));					// Stop bit
 	(void)bit_delay(t);
 }
 
