@@ -19,6 +19,13 @@
 */
 #include "tinylib.h"
 
+#ifndef TIMSK0
+#define TIMSK0	TIMSK
+#endif
+#ifndef TIFR0
+#define TIFR0	TIFR
+#endif
+
 /* sleep() - sleep for a given number of intervals.
  *
  * An interval is an overflow of TCNT0 with the prescaler set to max (1024)
@@ -39,15 +46,15 @@ void sleep(u8_t n_intervals)
 
 	/* Set up the timer for slowest overflow interrupt
 	*/
-	GTCCR = 0x81;		// Stop the prescaler
-	TCCR0A = 0x00;		// Clear all output-compare modes
-	TCCR0B = 0x05;		// Select clock source = clkio/1024
-	TCNT0 = 0x00;		// Clear the counter
-	TIMSK0 = 0x02;		// Disable Timer0 output-compare interrupts; enable overflow interrupt
-	TIFR0 = 0x0e;		// Clear all pending interrupts for Timer0
-	GTCCR = 0x01;		// Start and reset the prescaler
-	MCUCR &= ~0x18;		// Set sleep mode to idle
-	MCUCR |= 0x20;		// Enable sleep mode
+	GTCCR = 0x81;			// Stop the prescaler
+	TCCR0A = 0x00;			// Clear all output-compare modes
+	TCCR0B = 0x05;			// Select clock source = clkio/1024
+	TCNT0 = 0x00;			// Clear the counter
+	TIMSK0 = (1<<TOIE0);	// Disable Timer0 output-compare interrupts; enable overflow interrupt
+	TIFR0 = 0xff;			// Clear all pending interrupts for Timer0
+	GTCCR = 0x01;			// Start and reset the prescaler
+	MCUCR &= ~0x18;			// Set sleep mode to idle
+	MCUCR |= 0x20;			// Enable sleep mode
 
 	enable();
 	while ( n_intervals > 0 )
