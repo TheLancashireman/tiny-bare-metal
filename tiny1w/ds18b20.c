@@ -22,6 +22,10 @@
 u8_t ds18b20_buffer[DS18B20_SP_LEN];
 s8_t last_res;
 
+#if DS18B20_CVT_TIME
+u8_t cvt_iter;
+#endif
+
 /* The functions in this file all assume that the DS18B20 is the only 1-wire on the bus and
  * that it is operating with an external power supply.
  * Therefore:

@@ -19,7 +19,24 @@
 */
 #include "ds18b20.h"
 
+/* Configuration of the wait loop.
+ * The short-delay version is useful for measuring the conversion time.
+*/
+#if DS18B20_CVT_TIME
+#define WDSLEEP			WDSLEEP_16ms
+#define WDSLEEP_LIM		63
+#else
+/* Timing of conversion to be defined
+*/
+#define WDSLEEP			WDSLEEP_256ms
+#define WDSLEEP_LIM		4
+#endif
+
 /* ds18b20_read_temp() - reads the temperature
+ *
+ * This is an all-in-one conversion and read function for projects that don't have anything else to
+ * do during the conversion time.
+ * The MCU goes to power-down during the wait loop.
 */
 u16_t ds18b20_read_temp(void)
 {
@@ -28,9 +45,9 @@ u16_t ds18b20_read_temp(void)
 	if ( last_res != T1W_OK )
 		return ds18b20_invalid_temp();
 
-	s8_t lim = 4;
+	s8_t lim = WDSLEEP_LIM;
 	do {
-		wdpsleep(WDSLEEP_256ms);
+		wdpsleep(WDSLEEP);
 		lim--;
 	} while ( dsb1820_is_busy() && ( lim > 0) );
 
@@ -39,6 +56,10 @@ u16_t ds18b20_read_temp(void)
 		last_res = DS18B20_CVT_TIMEOUT;
 		return ds18b20_invalid_temp();
 	}
+
+#if DS18B20_CVT_TIME
+	cvt_iter = WDSLEEP_LIM - lim;
+#endif
 
 	ds18b20_read_scratchpad();
 

@@ -68,8 +68,15 @@
 */
 #define DS18B20_CVT_TIMEOUT		(T1W_DEV_ERR + 0)	// Timeout in conversion wait loop
 
+/* Conversion time measurement - default to NO
+*/
+#ifndef DS18B20_CVT_TIME
+#define DS18B20_CVT_TIME	0
+#endif
+
 extern u8_t ds18b20_buffer[DS18B20_SP_LEN];
 extern s8_t last_res;
+extern u8_t cvt_iter;
 
 /* ds18b20_send_command() - send a command to the DS18B20
 */
