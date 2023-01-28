@@ -40,28 +40,33 @@
 */
 u16_t ds18b20_read_temp(void)
 {
+	ds18b20_pon();
+
 	ds18b20_start_conversion();
 
-	if ( last_res != T1W_OK )
-		return ds18b20_invalid_temp();
-
-	s8_t lim = WDSLEEP_LIM;
-	do {
-		wdpsleep(WDSLEEP);
-		lim--;
-	} while ( dsb1820_is_busy() && ( lim > 0) );
-
-	if ( lim <= 0 )
+	if ( last_res == T1W_OK )
 	{
-		last_res = DS18B20_CVT_TIMEOUT;
-		return ds18b20_invalid_temp();
-	}
+		s8_t lim = WDSLEEP_LIM;
+		do {
+			wdpsleep(WDSLEEP);
+			lim--;
+		} while ( dsb1820_is_busy() && ( lim > 0) );
 
+		if ( lim <= 0 )
+		{
+			last_res = DS18B20_CVT_TIMEOUT;
+		}
+		else
+		{
 #if DS18B20_CVT_TIME
-	cvt_iter = WDSLEEP_LIM - lim;
+			cvt_iter = WDSLEEP_LIM - lim;
 #endif
 
-	ds18b20_read_scratchpad();
+			ds18b20_read_scratchpad();
+		}
+	}
+
+	ds18b20_poff();
 
 	if ( last_res != T1W_OK )
 		return ds18b20_invalid_temp();

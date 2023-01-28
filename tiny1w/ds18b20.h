@@ -78,6 +78,29 @@ extern u8_t ds18b20_buffer[DS18B20_SP_LEN];
 extern s8_t last_res;
 extern u8_t cvt_iter;
 
+extern void ds18b20_power_on(void);
+extern void ds18b20_power_off(void);
+extern u16_t ds18b20_read_temp(void);
+extern void ds18b20_read_scratchpad(void);
+extern s8_t dsb18b20_crc_ok(void);
+extern void ds18b20_start_conversion(void);
+
+/* Power control (if enabled)
+*/
+static inline void ds18b20_pon(void)
+{
+#ifdef DS18B20_POWER_PIN
+	ds18b20_power_on();
+#endif
+}
+
+static inline void ds18b20_poff()
+{
+#ifdef DS18B20_POWER_PIN
+	ds18b20_power_off();
+#endif
+}
+
 /* ds18b20_send_command() - send a command to the DS18B20
 */
 static inline void ds18b20_send_command(u8_t cmd)
@@ -105,10 +128,5 @@ static inline u16_t ds18b20_invalid_temp(void)
 {
 	return DS18B20_INVALID_TEMP + last_res;
 }
-
-extern u16_t ds18b20_read_temp(void);
-extern void ds18b20_read_scratchpad(void);
-extern s8_t dsb18b20_crc_ok(void);
-extern void ds18b20_start_conversion(void);
 
 #endif
