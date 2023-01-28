@@ -19,24 +19,15 @@
 */
 #include "ds18b20.h"
 
-/* Configuration of the wait loop.
- * The short-delay version is useful for measuring the conversion time.
-*/
-#if DS18B20_CVT_TIME
-#define WDSLEEP			WDSLEEP_16ms
-#define WDSLEEP_LIM		63
-#else
-/* Timing of conversion to be defined
-*/
-#define WDSLEEP			WDSLEEP_256ms
-#define WDSLEEP_LIM		4
-#endif
-
 /* ds18b20_read_temp() - reads the temperature
  *
  * This is an all-in-one conversion and read function for projects that don't have anything else to
  * do during the conversion time.
  * The MCU goes to power-down during the wait loop.
+ *
+ * The waiting time is configurable. It consists of an initial call to wdpsleep(), followed by a limited
+ * number of subsequent calls. The duration of the first and subsequent calls are separately configurable.
+ * This allows tuning to achieve lowest power consumption.
 */
 u16_t ds18b20_read_temp(void)
 {
@@ -46,22 +37,21 @@ u16_t ds18b20_read_temp(void)
 
 	if ( last_res == T1W_OK )
 	{
-		s8_t lim = WDSLEEP_LIM;
-		do {
-			wdpsleep(WDSLEEP);
-			lim--;
-		} while ( dsb1820_is_busy() && ( lim > 0) );
+		wdpsleep(DS18B20_CVT_DLY_FIRST);
 
-		if ( lim <= 0 )
+		u8_t i = 0;
+		do {
+			wdpsleep(DS18B20_CVT_DLY_LOOP);
+			i++;
+		} while ( dsb1820_is_busy() && ( i < DS18B20_CVT_DLY_LIM) );
+
+		ds18b20_store_cvt_time(i);
+		if ( i >= DS18B20_CVT_DLY_LIM )
 		{
 			last_res = DS18B20_CVT_TIMEOUT;
 		}
 		else
 		{
-#if DS18B20_CVT_TIME
-			cvt_iter = WDSLEEP_LIM - lim;
-#endif
-
 			ds18b20_read_scratchpad();
 		}
 	}

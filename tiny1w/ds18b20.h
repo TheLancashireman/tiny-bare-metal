@@ -68,10 +68,24 @@
 */
 #define DS18B20_CVT_TIMEOUT		(T1W_DEV_ERR + 0)	// Timeout in conversion wait loop
 
-/* Conversion time measurement - default to NO
+/* Conversion time measurement - default to off
 */
 #ifndef DS18B20_CVT_TIME
 #define DS18B20_CVT_TIME	0
+#endif
+
+/* Conversion delay parameters
+*/
+#ifndef DS18B20_CVT_DLY_FIRST
+#define DS18B20_CVT_DLY_FIRST	WDSLEEP_256ms
+#endif
+
+#ifndef DS18B20_CVT_DLY_LOOP
+#define DS18B20_CVT_DLY_LOOP	WDSLEEP_16ms
+#endif
+
+#ifndef DS18B20_CVT_DLY_LIM
+#define DS18B20_CVT_DLY_LIM		16
 #endif
 
 extern u8_t ds18b20_buffer[DS18B20_SP_LEN];
@@ -98,6 +112,15 @@ static inline void ds18b20_poff()
 {
 #ifdef DS18B20_POWER_PIN
 	ds18b20_power_off();
+#endif
+}
+
+/* ds18b20_store_cvt_time() - store the conversion time (if enabled)
+*/
+static inline void ds18b20_store_cvt_time(u8_t t)
+{
+#if DS18B20_CVT_TIME
+	cvt_iter = t;
 #endif
 }
 
