@@ -25,3 +25,4 @@
 TINYL_OBJS	+=	$(OBJ_DIR)/tiny1w.o
 TINYL_OBJS	+=	$(OBJ_DIR)/ds18b20.o
 TINYL_OBJS	+=	$(OBJ_DIR)/ds18b20-read-temp.o
+TINYL_OBJS	+=	$(OBJ_DIR)/ds18b20-power.o
