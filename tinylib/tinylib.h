@@ -215,11 +215,13 @@ static inline void port_pin_mode(char port, u8_t pin, u8_t mode)
 		if ( mode == OUTPUT )
 			DDRA |= mask;
 		else
+		{
 			DDRA &= ~mask;
-		if ( mode == PULLUP )
-			PORTA |= mask;
-		else
-			PORTA &= ~mask;
+			if ( mode == PULLUP )
+				PORTA |= mask;
+			else
+				PORTA &= ~mask;
+		}
 	}
 #endif
 #ifdef PORTB
@@ -228,11 +230,13 @@ static inline void port_pin_mode(char port, u8_t pin, u8_t mode)
 		if ( mode == OUTPUT )
 			DDRB |= mask;
 		else
+		{
 			DDRB &= ~mask;
-		if ( mode == PULLUP )
-			PORTB |= mask;
-		else
-			PORTB &= ~mask;
+			if ( mode == PULLUP )
+				PORTB |= mask;
+			else
+				PORTB &= ~mask;
+		}
 	}
 #endif
 #ifdef PORTC
@@ -241,11 +245,13 @@ static inline void port_pin_mode(char port, u8_t pin, u8_t mode)
 		if ( mode == OUTPUT )
 			DDRC |= mask;
 		else
+		{
 			DDRC &= ~mask;
-		if ( mode == PULLUP )
-			PORTC |= mask;
-		else
-			PORTC &= ~mask;
+			if ( mode == PULLUP )
+				PORTC |= mask;
+			else
+				PORTC &= ~mask;
+		}
 	}
 #endif
 #ifdef PORTD
@@ -254,11 +260,13 @@ static inline void port_pin_mode(char port, u8_t pin, u8_t mode)
 		if ( mode == OUTPUT )
 			DDRD |= mask;
 		else
+		{
 			DDRD &= ~mask;
-		if ( mode == PULLUP )
-			PORTD |= mask;
-		else
-			PORTD &= ~mask;
+			if ( mode == PULLUP )
+				PORTD |= mask;
+			else
+				PORTD &= ~mask;
+		}
 	}
 #endif
 	TL_restore(s);
