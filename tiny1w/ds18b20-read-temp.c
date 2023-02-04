@@ -40,10 +40,12 @@ u16_t ds18b20_read_temp(void)
 		wdpsleep(DS18B20_CVT_DLY_FIRST);
 
 		u8_t i = 0;
-		do {
+		
+		while ( dsb1820_is_busy() && ( i < DS18B20_CVT_DLY_LIM) )
+		{
 			wdpsleep(DS18B20_CVT_DLY_LOOP);
 			i++;
-		} while ( dsb1820_is_busy() && ( i < DS18B20_CVT_DLY_LIM) );
+		}
 
 		ds18b20_store_cvt_time(i);
 		if ( i >= DS18B20_CVT_DLY_LIM )
