@@ -35,6 +35,7 @@ CC_OPT		+=	-Os
 CC_OPT		+=	-g
 CC_OPT		+=	-Wall
 CC_OPT		+=	-I $(TLIB_DIR)
+CC_OPT		+=	-D HZ=8000000
 
 LD_OPT		+=	-mmcu=attiny44
 LD_OPT		+=	-Wl,--gc-sections
