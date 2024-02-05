@@ -1,4 +1,4 @@
-# Makefile for led44 (tiny bare metal)
+# Makefile for crystal44 (tiny bare metal)
 
 # Copyright David Haworth
 # 
@@ -45,33 +45,33 @@ LD_OPT		+=	-L $(LIB_DIR)
 LD_LIB		+=	-ltiny
 LD_LIB		+=	-lm
 
-OBJS		+=	$(OBJ_DIR)/led44.o
+OBJS		+=	$(OBJ_DIR)/crystal44.o
 
 VPATH		+=	$(TLIB_DIR)
 
 .PHONY:		default clean hex upload
 
-default:	$(BUILD)/led44.elf
+default:	$(BUILD)/crystal44.elf
 
 clean:
 	if [ -d $(BUILD) ] ; then rm -r $(BUILD); fi
 
-hex:		$(BUILD)/led44.ihex
+hex:		$(BUILD)/crystal44.ihex
 
 $(BUILD)/o:
 	mkdir -p $(BUILD)/o
 
-$(BUILD)/led44.elf:	$(OBJ_DIR) $(OBJS) $(LIB_DIR)/libtiny.a
+$(BUILD)/crystal44.elf:	$(OBJ_DIR) $(OBJS) $(LIB_DIR)/libtiny.a
 	$(GLD) $(LD_OPT) -o $@ $(OBJS) $(LD_LIB)
 	
 
 $(OBJ_DIR)/%.o:	%.c
 	$(GCC) $(CC_OPT) -o $@ -c $<
 
-$(BUILD)/led44.ihex:	$(BUILD)/led44.elf
+$(BUILD)/crystal44.ihex:	$(BUILD)/crystal44.elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
-upload:		$(BUILD)/led44.ihex
-	avrdude -P $(ISPPORT) -b 19200 -c avrisp -p t44 -U flash:w:build/led44.ihex:i
+upload:		$(BUILD)/crystal44.ihex
+	avrdude -P $(ISPPORT) -b 19200 -c avrisp -p t44 -U flash:w:build/crystal44.ihex:i
 
 include $(TLIB_DIR)/tinylib.make

@@ -1,6 +1,7 @@
-# led44
+# crystal44
 
-LED blink program on attiny44 bare metal - 20ms on, once every 2 seconds.
+Demo program on attiny44 bare metal
+* LED blinks 20ms on, once every 2 seconds.
 
 The timing in this sketch is done using timing loops.
 

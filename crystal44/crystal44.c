@@ -1,4 +1,4 @@
-/* led85.c - led blinking application
+/* crystal44.c - application to demonstrate clocking an AtTiny44 with a crystal
  *
  * (c) David Haworth
  *
