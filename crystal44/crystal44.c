@@ -35,10 +35,9 @@ void delay(unsigned ms);
 
 int main(void)
 {
-	# Set the prescaler to divide-by-1.
-	# The first write enables the register; the second write (at most 4 clocks later) sets the value.
-	CLKPR = 0x80;
-	CLKPR = 0x00;
+	/* Set the clock prescaler to divide-by-1
+	*/
+	set_clkpr(0);
 
 	port_pin_mode(ledport, ledpin, OUTPUT);
 

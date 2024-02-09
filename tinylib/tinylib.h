@@ -361,4 +361,17 @@ static inline void delay_us(u32_t us)
 	delay_ticks(us_to_ticks(us));
 }
 
+/* set_clkpr() - set the clock prescaler to a given value
+ *
+ * Allowed range of psval: 0..8
+ * The prescaler divides by 2**psval
+*/
+static inline void set_clkpr(u8_t psval)
+{
+	u8_t s = TL_disable();
+	CLKPR = (1 << CLKPCE);		/* Enable the register for writing */
+	CLKPR = psval;				/* Set the value */
+	TL_restore(s);
+}
+
 #endif
