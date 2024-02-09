@@ -19,19 +19,34 @@
 */
 #include "tinylib.h"
 
-#define ledpin  PB1
+/* On an AtTiny44:
+ *	PB0 is XTAL1 and CLKI for external clock.
+ *	PB1 is XTAL2
+ *	PB2 is CKOUT, which might be useful for measurements.
+ *	PB3 is RESET, which we can't use without a way of resetting the fuses.
+ *
+ * The remaining pins are PA0 to PA7
+ * So let's use PA0 (pin 13) for the LED blink.
+*/
+#define ledpin  PA0
+#define ledport 'A'
 
 void delay(unsigned ms);
 
 int main(void)
 {
-	pin_mode(ledpin, OUTPUT);
+	# Set the prescaler to divide-by-1.
+	# The first write enables the register; the second write (at most 4 clocks later) sets the value.
+	CLKPR = 0x80;
+	CLKPR = 0x00;
+
+	port_pin_mode(ledport, ledpin, OUTPUT);
 
 	for (;;)
 	{
-		pin_set(ledpin, HIGH);
+		port_pin_set(ledport, ledpin, HIGH);
 		delay(20);
-		pin_set(ledpin, LOW);
+		port_pin_set(ledport, ledpin, LOW);
 		delay(1980);
 	}
 
