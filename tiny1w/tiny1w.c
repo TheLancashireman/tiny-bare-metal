@@ -1,4 +1,4 @@
-/* tiny1w-optimized.c - 1-wire protocol
+/* tiny1w.c - 1-wire protocol
  *
  * (c) David Haworth
  *

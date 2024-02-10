@@ -69,6 +69,13 @@
 #error "Unsupported HZ value"
 #endif
 
+/* Some devices use WDTCR, others use WDTCSR.
+ * The register looks the same in all the cases I've seen so far.
+*/
+#ifndef WDTCR
+#define WDTCR	WDTCSR
+#endif
+
 /* WDP3..0 values for wdpsleep.
  *
  * Time values are approximate

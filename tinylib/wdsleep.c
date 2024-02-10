@@ -20,10 +20,6 @@
 #include "tinylib.h"
 #include <avr/interrupt.h>
 
-#ifndef WDTCR
-#define WDTCR	WDTCSR
-#endif
-
 /* wdsleep() - sleep for a time give by the parameter
  *
  * The time is given by the parameter, which contains bits WDP3..WDP0 of WDTCR:
