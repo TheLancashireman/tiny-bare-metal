@@ -20,6 +20,17 @@
 #include "tinylib.h"
 #include <avr/interrupt.h>
 
+/* The sleep_mode variable always includes the sleep_mode enable flag
+*/
+u8_t sleep_mode = MCUCR_SM_POWDN | 0x20;
+
+/* wd_set_sleep_mode() - set the sleep mode
+*/
+void wd_set_sleep_mode(u8_t sm)
+{
+	sleep_mode = (sm & MCUCR_SM) | 0x20;	
+}
+
 /* wdsleep() - sleep for a time give by the parameter
  *
  * The time is given by the parameter, which contains bits WDP3..WDP0 of WDTCR:
@@ -43,7 +54,9 @@ void wdpsleep(u8_t wdp_val)
 	WDTCR = 0x18;					// Prime WDTCR for writing (WDCE | WDE)
 	WDTCR = wdp_val | 0x50;			// WDCE=1, WDTIE=1, WDE=0 + wdp_val
 
-	MCUCR = (MCUCR & ~0x18) | 0x30;	// Clear out previous sleep mode; set sleep mode to "power down" & enable.
+	/* Clear out previous sleep mode; set sleep mode to "power down" & enable.
+	*/
+	MCUCR = (MCUCR & ~0x18) | sleep_mode;
 
 	asm("sei");
 	asm("sleep");		// Sleep till the watchdog times out

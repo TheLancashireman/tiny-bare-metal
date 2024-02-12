@@ -91,6 +91,14 @@
 #define WDSLEEP_4s		0x20
 #define WDSLEEP_8s		0x21
 
+/* Sleep modes (MCUCR)
+*/
+#define MCUCR_SM		0x18	// Mask for clearing/reading
+#define MCUCR_SM_IDLE	0x00
+#define MCUCR_SM_ADCNR	0x08
+#define MCUCR_SM_POWDN	0x10
+#define MCUCR_SM_STBY	0x18
+
 #define ms_to_ticks(ms)		(((u32_t)(ms) * 1000)/T0_RESOLUTION)
 #define us_to_ticks(us)		(((u32_t)(us) + T0_RESOLUTION  - 1)/T0_RESOLUTION)
 
@@ -191,6 +199,7 @@ static inline void TL_restore(u8_t s)
 extern void timing_init(void);
 extern void delay_ticks(u32_t ticks);
 extern void sleep(u8_t n_intervals);
+extern void wd_set_sleep_mode(u8_t sm);
 extern void wdpsleep(u8_t wdp_val);
 extern void wdsleep(u8_t secs);
 extern u8_t reverse_bits(u8_t b);
