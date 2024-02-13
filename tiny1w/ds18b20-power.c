@@ -26,7 +26,7 @@ void ds18b20_power_on(void)
 #ifdef DS18B20_POWER_PIN
 	port_pin_set(DS18B20_POWER_PORT, DS18B20_POWER_PIN, 1);
 	port_pin_mode(DS18B20_POWER_PORT, DS18B20_POWER_PIN, OUTPUT);
-	wdpsleep(WDSLEEP_16ms);
+	wdpsleep(DS18B20_SLEEP_MODE, WDSLEEP_16ms);
 #endif
 }
 

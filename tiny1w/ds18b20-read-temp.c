@@ -37,13 +37,13 @@ u16_t ds18b20_read_temp(void)
 
 	if ( last_res == T1W_OK )
 	{
-		wdpsleep(DS18B20_CVT_DLY_FIRST);
+		wdpsleep(DS18B20_SLEEP_MODE, DS18B20_CVT_DLY_FIRST);
 
 		u8_t i = 0;
 		
 		while ( dsb1820_is_busy() && ( i < DS18B20_CVT_DLY_LIM) )
 		{
-			wdpsleep(DS18B20_CVT_DLY_LOOP);
+			wdpsleep(DS18B20_SLEEP_MODE, DS18B20_CVT_DLY_LOOP);
 			i++;
 		}
 
