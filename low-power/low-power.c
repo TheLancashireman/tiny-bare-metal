@@ -30,8 +30,6 @@
 #include "tinylib.h"
 #include "tinyio.h"
 
-#define SLEEP(x)		wdsleep(x)
-
 int main(void)
 {
 	disable();
@@ -62,7 +60,7 @@ int main(void)
 
 	for (;;)
 	{
-		wdsleep(30);
+		wdsleep(MCUCR_SM_POWDN, 30);
 
 		putc('.');
 		if ( (--count) <= 0 )

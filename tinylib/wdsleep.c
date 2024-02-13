@@ -20,20 +20,11 @@
 #include "tinylib.h"
 #include <avr/interrupt.h>
 
-/* The sleep_mode variable always includes the sleep_mode enable flag
-*/
-u8_t sleep_mode = MCUCR_SM_POWDN | 0x20;
-
-/* wd_set_sleep_mode() - set the sleep mode
-*/
-void wd_set_sleep_mode(u8_t sm)
-{
-	sleep_mode = (sm & MCUCR_SM) | 0x20;	
-}
-
-/* wdsleep() - sleep for a time give by the parameter
+/* wdsleep() - sleep for a time give by the 2nd parameter
  *
- * The time is given by the parameter, which contains bits WDP3..WDP0 of WDTCR:
+ * The mode is given by the first parameter
+ *
+ * The time is given by the 2nd parameter, which contains bits WDP3..WDP0 of WDTCR:
  *		0x00	16ms	WDSLEEP_16ms
  *		0x01	32ms	WDSLEEP_32ms
  *		0x02	64ms	WDSLEEP_64ms
@@ -48,51 +39,51 @@ void wd_set_sleep_mode(u8_t sm)
  *
  * Precondition: interrupts disabled
 */
-void wdpsleep(u8_t wdp_val)
+void wdpsleep(u8_t sleep_mode, u8_t wdp_val)
 {
 	MCUSR = 0;						// Clear watchdog reset flag
 	WDTCR = 0x18;					// Prime WDTCR for writing (WDCE | WDE)
 	WDTCR = wdp_val | 0x50;			// WDCE=1, WDTIE=1, WDE=0 + wdp_val
 
-	/* Clear out previous sleep mode; set sleep mode to "power down" & enable.
+	/* Clear out previous sleep mode; set sleep mode & enable.
 	*/
-	MCUCR = (MCUCR & ~0x18) | sleep_mode;
+	MCUCR = (MCUCR & ~MCUCR_SM) | (sleep_mode & MCUCR_SM) | MCUCR_SE;
 
 	asm("sei");
 	asm("sleep");		// Sleep till the watchdog times out
 	asm("cli");
 
-	MCUCR &= ~0x20;		// Disable sleep mode
+	MCUCR &= ~MCUCR_SE;	// Disable sleep mode
 	WDTCR = 0x18;		// Prime WDTCR for writing (WDCE | WDE)
 	WDTCR = 0x10;		// Clear everything out
 }
 
 /* wdsleep() - sleep for up to 255 seconds using watchdog timer
 */
-void wdsleep(u8_t secs)
+void wdsleep(u8_t sleep_mode, u8_t secs)
 {
 	u8_t is = TL_disable();
 	u8_t n8 = secs >> 3;
 
 	while ( n8 > 0 )
 	{
-		wdpsleep(WDSLEEP_8s);
+		wdpsleep(sleep_mode, WDSLEEP_8s);
 		n8--;
 	}
 
 	if ( (secs & 4) != 0 )
 	{
-		wdpsleep(WDSLEEP_4s);
+		wdpsleep(sleep_mode, WDSLEEP_4s);
 	}
 
 	if ( (secs & 2) != 0 )
 	{
-		wdpsleep(WDSLEEP_2s);
+		wdpsleep(sleep_mode, WDSLEEP_2s);
 	}
 
 	if ( (secs & 1) != 0 )
 	{
-		wdpsleep(WDSLEEP_1s);
+		wdpsleep(sleep_mode, WDSLEEP_1s);
 	}
 
 	TL_restore(is);

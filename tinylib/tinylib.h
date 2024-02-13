@@ -93,6 +93,7 @@
 
 /* Sleep modes (MCUCR)
 */
+#define MCUCR_SE		0x20	// Sleep mode enable
 #define MCUCR_SM		0x18	// Mask for clearing/reading
 #define MCUCR_SM_IDLE	0x00
 #define MCUCR_SM_ADCNR	0x08
@@ -199,9 +200,8 @@ static inline void TL_restore(u8_t s)
 extern void timing_init(void);
 extern void delay_ticks(u32_t ticks);
 extern void sleep(u8_t n_intervals);
-extern void wd_set_sleep_mode(u8_t sm);
-extern void wdpsleep(u8_t wdp_val);
-extern void wdsleep(u8_t secs);
+extern void wdpsleep(u8_t sleep_mode, u8_t wdp_val);
+extern void wdsleep(u8_t sleep_mode, u8_t secs);
 extern u8_t reverse_bits(u8_t b);
 extern u8_t read_eeprom(u8_t addr);
 
